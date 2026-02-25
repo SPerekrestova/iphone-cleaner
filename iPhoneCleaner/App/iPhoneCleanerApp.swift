@@ -7,6 +7,6 @@ struct iPhoneCleanerApp: App {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(for: [])
+        .modelContainer(for: [PhotoIssue.self, ScanResult.self])
     }
 }

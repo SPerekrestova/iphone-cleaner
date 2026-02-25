@@ -7,9 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B5E9B0568CC867871AA24CA /* PhotoIssueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 686181CD92DECBBEFBFB4D0B /* PhotoIssueTests.swift */; };
+		1E9C4133C759AD2259A137FB /* PhotoIssue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88CE6481C06E721C1062DB20 /* PhotoIssue.swift */; };
+		64F015A57A3BFEC43F7984B0 /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B8504FF99C5F49C7585B79 /* AppInfo.swift */; };
 		71F89605AF29C7836ED0D90E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB8132E5841138D15CDC497 /* ContentView.swift */; };
 		90645AD69A2A7D3B1E10604F /* iPhoneCleanerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033965EAAF8C7C8A2B38F5B8 /* iPhoneCleanerTests.swift */; };
 		DE98FA96FFEB8351A9A1950A /* iPhoneCleanerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE46CC7B0D7AB1653F56A307 /* iPhoneCleanerApp.swift */; };
+		E7059BC7DCF8B20CCF404727 /* ScanResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDEFAE1BA5E6FCE5FE45397 /* ScanResult.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -25,15 +29,17 @@
 /* Begin PBXFileReference section */
 		033965EAAF8C7C8A2B38F5B8 /* iPhoneCleanerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPhoneCleanerTests.swift; sourceTree = "<group>"; };
 		06EACA16D37BCB402669B624 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
-		0BF8DC8C022E33AE80BD6B40 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
 		1EAE4DB2C83BA6C48DE30D08 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
+		5CDEFAE1BA5E6FCE5FE45397 /* ScanResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanResult.swift; sourceTree = "<group>"; };
 		611EF6118E643C4B8484DA91 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
 		63E6ADFA5CD5342B350B56BE /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
-		64A9E74C3F4C2900D0D8CDF8 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
+		686181CD92DECBBEFBFB4D0B /* PhotoIssueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoIssueTests.swift; sourceTree = "<group>"; };
 		6A3E04ACCBA3B7B25AE7C339 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
 		720CF95771EDBFD366443F55 /* iPhoneCleanerTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = iPhoneCleanerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7F42BC2C7817C4D70ADE04DA /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
 		805B8DA800799DDFD96E2915 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
+		88CE6481C06E721C1062DB20 /* PhotoIssue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoIssue.swift; sourceTree = "<group>"; };
+		92B8504FF99C5F49C7585B79 /* AppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfo.swift; sourceTree = "<group>"; };
 		9C601D45403A8AD3396799D8 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
 		9F78DE8B0F2C11847690E506 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
 		9F7D2182A8C24EFAB27B1786 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
@@ -77,7 +83,7 @@
 		3CC399B433DB0FE22A6C10C9 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				0BF8DC8C022E33AE80BD6B40 /* .gitkeep */,
+				686181CD92DECBBEFBFB4D0B /* PhotoIssueTests.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -101,7 +107,9 @@
 		67C001E621020E1B06462E73 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				64A9E74C3F4C2900D0D8CDF8 /* .gitkeep */,
+				92B8504FF99C5F49C7585B79 /* AppInfo.swift */,
+				88CE6481C06E721C1062DB20 /* PhotoIssue.swift */,
+				5CDEFAE1BA5E6FCE5FE45397 /* ScanResult.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -274,6 +282,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B5E9B0568CC867871AA24CA /* PhotoIssueTests.swift in Sources */,
 				90645AD69A2A7D3B1E10604F /* iPhoneCleanerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -282,7 +291,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				64F015A57A3BFEC43F7984B0 /* AppInfo.swift in Sources */,
 				71F89605AF29C7836ED0D90E /* ContentView.swift in Sources */,
+				1E9C4133C759AD2259A137FB /* PhotoIssue.swift in Sources */,
+				E7059BC7DCF8B20CCF404727 /* ScanResult.swift in Sources */,
 				DE98FA96FFEB8351A9A1950A /* iPhoneCleanerApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
