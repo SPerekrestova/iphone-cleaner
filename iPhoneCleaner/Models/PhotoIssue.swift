@@ -1,7 +1,7 @@
 import Foundation
 import SwiftData
 
-enum IssueCategory: String, Codable, CaseIterable {
+enum IssueCategory: String, Codable, CaseIterable, Sendable {
     case duplicate
     case similar
     case blurry
