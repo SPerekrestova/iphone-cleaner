@@ -1,9 +1,11 @@
 import SwiftUI
+import Photos
 
 struct HomeView: View {
     @State private var viewModel = HomeViewModel()
     @State private var isScanning = false
     @State private var showReview = false
+    @State private var showPermission = false
     @State private var selectedCategory: IssueCategory?
 
     var body: some View {
@@ -20,7 +22,12 @@ struct HomeView: View {
 
                     // Scan Button
                     Button {
-                        isScanning = true
+                        let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
+                        if status == .authorized || status == .limited {
+                            isScanning = true
+                        } else {
+                            showPermission = true
+                        }
                     } label: {
                         Label("Scan Photos", systemImage: "magnifyingglass")
                             .font(.headline)
@@ -81,6 +88,12 @@ struct HomeView: View {
                         category: category,
                         photoService: PhotoLibraryService()
                     )
+                }
+            }
+            .sheet(isPresented: $showPermission) {
+                PhotoPermissionView {
+                    showPermission = false
+                    isScanning = true
                 }
             }
             .onAppear {
