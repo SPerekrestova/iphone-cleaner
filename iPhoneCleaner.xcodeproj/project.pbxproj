@@ -1,0 +1,531 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		71F89605AF29C7836ED0D90E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB8132E5841138D15CDC497 /* ContentView.swift */; };
+		90645AD69A2A7D3B1E10604F /* iPhoneCleanerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033965EAAF8C7C8A2B38F5B8 /* iPhoneCleanerTests.swift */; };
+		DE98FA96FFEB8351A9A1950A /* iPhoneCleanerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE46CC7B0D7AB1653F56A307 /* iPhoneCleanerApp.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E6F40A9552FCCF1D3AB4C0D9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 59690AB01F77EDBCB1A8BB55 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 500F70FBD3CB82F1BA0E8DAF;
+			remoteInfo = iPhoneCleaner;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		033965EAAF8C7C8A2B38F5B8 /* iPhoneCleanerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPhoneCleanerTests.swift; sourceTree = "<group>"; };
+		06EACA16D37BCB402669B624 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
+		0BF8DC8C022E33AE80BD6B40 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
+		1EAE4DB2C83BA6C48DE30D08 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
+		611EF6118E643C4B8484DA91 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
+		63E6ADFA5CD5342B350B56BE /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
+		64A9E74C3F4C2900D0D8CDF8 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
+		6A3E04ACCBA3B7B25AE7C339 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
+		720CF95771EDBFD366443F55 /* iPhoneCleanerTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = iPhoneCleanerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7F42BC2C7817C4D70ADE04DA /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
+		805B8DA800799DDFD96E2915 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
+		9C601D45403A8AD3396799D8 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
+		9F78DE8B0F2C11847690E506 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
+		9F7D2182A8C24EFAB27B1786 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
+		AA8779FE57D1638B9E31FE50 /* iPhoneCleaner.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = iPhoneCleaner.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BCB8132E5841138D15CDC497 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		EE46CC7B0D7AB1653F56A307 /* iPhoneCleanerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPhoneCleanerApp.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		03CF637D62723D8652A7F794 /* iPhoneCleaner */ = {
+			isa = PBXGroup;
+			children = (
+				BCB8132E5841138D15CDC497 /* ContentView.swift */,
+				5D47ED89E515F246EA8B3E7A /* App */,
+				67C001E621020E1B06462E73 /* Models */,
+				6A7DDEAA8D97D0128313A7F7 /* Services */,
+				B85568C7A8397DFBB147C8CD /* Utilities */,
+				EE22E91DBA73BDCE37A55538 /* ViewModels */,
+				8D258DC5089119166564CCB1 /* Views */,
+			);
+			path = iPhoneCleaner;
+			sourceTree = "<group>";
+		};
+		198A1D915879E00F5CB75EC7 /* Scanning */ = {
+			isa = PBXGroup;
+			children = (
+				9F7D2182A8C24EFAB27B1786 /* .gitkeep */,
+			);
+			path = Scanning;
+			sourceTree = "<group>";
+		};
+		1EB994590B25FBADFC36929B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AA8779FE57D1638B9E31FE50 /* iPhoneCleaner.app */,
+				720CF95771EDBFD366443F55 /* iPhoneCleanerTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3CC399B433DB0FE22A6C10C9 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				0BF8DC8C022E33AE80BD6B40 /* .gitkeep */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		4144E3C995E6F8F071785FA9 /* Integration */ = {
+			isa = PBXGroup;
+			children = (
+				1EAE4DB2C83BA6C48DE30D08 /* .gitkeep */,
+			);
+			path = Integration;
+			sourceTree = "<group>";
+		};
+		5D47ED89E515F246EA8B3E7A /* App */ = {
+			isa = PBXGroup;
+			children = (
+				EE46CC7B0D7AB1653F56A307 /* iPhoneCleanerApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		67C001E621020E1B06462E73 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				64A9E74C3F4C2900D0D8CDF8 /* .gitkeep */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		6A7DDEAA8D97D0128313A7F7 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				9F78DE8B0F2C11847690E506 /* .gitkeep */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		764A991488376FC908DD1E21 /* Review */ = {
+			isa = PBXGroup;
+			children = (
+				06EACA16D37BCB402669B624 /* .gitkeep */,
+			);
+			path = Review;
+			sourceTree = "<group>";
+		};
+		79AA9F31D8D72F6474F6B00D = {
+			isa = PBXGroup;
+			children = (
+				03CF637D62723D8652A7F794 /* iPhoneCleaner */,
+				C2C57FD6ED0A7DD59B690A8A /* iPhoneCleanerTests */,
+				1EB994590B25FBADFC36929B /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		8D258DC5089119166564CCB1 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				9146CBF09BE34F21D448C877 /* Apps */,
+				F4D01146AE8D2DA322E1AF25 /* Home */,
+				764A991488376FC908DD1E21 /* Review */,
+				198A1D915879E00F5CB75EC7 /* Scanning */,
+				9DF043EF5E6B5B1C4DAE00FD /* Settings */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		9146CBF09BE34F21D448C877 /* Apps */ = {
+			isa = PBXGroup;
+			children = (
+				7F42BC2C7817C4D70ADE04DA /* .gitkeep */,
+			);
+			path = Apps;
+			sourceTree = "<group>";
+		};
+		9DF043EF5E6B5B1C4DAE00FD /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				63E6ADFA5CD5342B350B56BE /* .gitkeep */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		B85568C7A8397DFBB147C8CD /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				9C601D45403A8AD3396799D8 /* .gitkeep */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		C2C57FD6ED0A7DD59B690A8A /* iPhoneCleanerTests */ = {
+			isa = PBXGroup;
+			children = (
+				033965EAAF8C7C8A2B38F5B8 /* iPhoneCleanerTests.swift */,
+				4144E3C995E6F8F071785FA9 /* Integration */,
+				3CC399B433DB0FE22A6C10C9 /* Models */,
+				E963A49501596C88DE9DCD24 /* Services */,
+			);
+			path = iPhoneCleanerTests;
+			sourceTree = "<group>";
+		};
+		E963A49501596C88DE9DCD24 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				6A3E04ACCBA3B7B25AE7C339 /* .gitkeep */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		EE22E91DBA73BDCE37A55538 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				611EF6118E643C4B8484DA91 /* .gitkeep */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		F4D01146AE8D2DA322E1AF25 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				805B8DA800799DDFD96E2915 /* .gitkeep */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1894416D49371D04F6D08955 /* iPhoneCleanerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 23EE4CFA08CD1F9C431DD0EA /* Build configuration list for PBXNativeTarget "iPhoneCleanerTests" */;
+			buildPhases = (
+				66E33A3152CDA3EE594ADC09 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F855A54AD9F8458C3B18A877 /* PBXTargetDependency */,
+			);
+			name = iPhoneCleanerTests;
+			packageProductDependencies = (
+			);
+			productName = iPhoneCleanerTests;
+			productReference = 720CF95771EDBFD366443F55 /* iPhoneCleanerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		500F70FBD3CB82F1BA0E8DAF /* iPhoneCleaner */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B86CD3E9E7F3F9AD0EB3FEA4 /* Build configuration list for PBXNativeTarget "iPhoneCleaner" */;
+			buildPhases = (
+				C23AE48C69246D5E359BE024 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = iPhoneCleaner;
+			packageProductDependencies = (
+			);
+			productName = iPhoneCleaner;
+			productReference = AA8779FE57D1638B9E31FE50 /* iPhoneCleaner.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		59690AB01F77EDBCB1A8BB55 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+			};
+			buildConfigurationList = 3473DEDB33799515FCF3AAF3 /* Build configuration list for PBXProject "iPhoneCleaner" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 79AA9F31D8D72F6474F6B00D;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				500F70FBD3CB82F1BA0E8DAF /* iPhoneCleaner */,
+				1894416D49371D04F6D08955 /* iPhoneCleanerTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		66E33A3152CDA3EE594ADC09 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				90645AD69A2A7D3B1E10604F /* iPhoneCleanerTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C23AE48C69246D5E359BE024 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				71F89605AF29C7836ED0D90E /* ContentView.swift in Sources */,
+				DE98FA96FFEB8351A9A1950A /* iPhoneCleanerApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F855A54AD9F8458C3B18A877 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 500F70FBD3CB82F1BA0E8DAF /* iPhoneCleaner */;
+			targetProxy = E6F40A9552FCCF1D3AB4C0D9 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0353DA619A702E953B5AC3ED /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		3E5C7EB253AAA7A226E29D2F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.svetlana.iPhoneCleanerTests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iPhoneCleaner.app/iPhoneCleaner";
+			};
+			name = Release;
+		};
+		4AD0BFBA32003A543789B607 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		5D69276030F5B3A37F9E7847 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "iPhone Cleaner needs write access to move selected photos to Recently Deleted.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "iPhone Cleaner needs access to your photo library to find duplicates, blurry photos, and screenshots for cleanup.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.svetlana.iPhoneCleaner;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		7D2DBCA571A923DF38BFA721 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "iPhone Cleaner needs write access to move selected photos to Recently Deleted.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "iPhone Cleaner needs access to your photo library to find duplicates, blurry photos, and screenshots for cleanup.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.svetlana.iPhoneCleaner;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		A20606FCEF5B0D5591D4A39D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.svetlana.iPhoneCleanerTests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iPhoneCleaner.app/iPhoneCleaner";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		23EE4CFA08CD1F9C431DD0EA /* Build configuration list for PBXNativeTarget "iPhoneCleanerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A20606FCEF5B0D5591D4A39D /* Debug */,
+				3E5C7EB253AAA7A226E29D2F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		3473DEDB33799515FCF3AAF3 /* Build configuration list for PBXProject "iPhoneCleaner" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4AD0BFBA32003A543789B607 /* Debug */,
+				0353DA619A702E953B5AC3ED /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B86CD3E9E7F3F9AD0EB3FEA4 /* Build configuration list for PBXNativeTarget "iPhoneCleaner" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5D69276030F5B3A37F9E7847 /* Debug */,
+				7D2DBCA571A923DF38BFA721 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 59690AB01F77EDBCB1A8BB55 /* Project object */;
+}

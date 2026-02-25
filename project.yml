@@ -1,0 +1,41 @@
+name: iPhoneCleaner
+options:
+  bundleIdPrefix: com.svetlana
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "16.0"
+
+# TODO: Re-add Mirai SDK package when Xcode.app is available for SPM resolution
+# packages:
+#   MiraiSDK:
+#     url: https://github.com/trymirai/uzu-swift.git
+#     from: "0.1.0"
+
+targets:
+  iPhoneCleaner:
+    type: application
+    platform: iOS
+    sources:
+      - iPhoneCleaner
+    settings:
+      base:
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_NSPhotoLibraryUsageDescription: "iPhone Cleaner needs access to your photo library to find duplicates, blurry photos, and screenshots for cleanup."
+        INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription: "iPhone Cleaner needs write access to move selected photos to Recently Deleted."
+        SWIFT_VERSION: "5.9"
+        GENERATE_INFOPLIST_FILE: YES
+    # dependencies:
+    #   - package: MiraiSDK
+
+  iPhoneCleanerTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - iPhoneCleanerTests
+    settings:
+      base:
+        SWIFT_VERSION: "5.9"
+        GENERATE_INFOPLIST_FILE: YES
+    dependencies:
+      - target: iPhoneCleaner
