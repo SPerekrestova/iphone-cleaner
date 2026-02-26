@@ -3,6 +3,7 @@ import Photos
 
 struct HomeView: View {
     @Environment(AppState.self) private var appState
+    @Environment(\.modelContext) private var modelContext
     @State private var isScanning = false
     @State private var showReview = false
     @State private var showPermission = false
@@ -71,7 +72,7 @@ struct HomeView: View {
             .navigationTitle("iPhone Cleaner")
             .fullScreenCover(isPresented: $isScanning) {
                 ScanningView(scanEngine: appState.scanEngine, settings: appState.scanSettings) { result in
-                    appState.lastScanResult = result
+                    appState.saveScanResult(result, context: modelContext)
                     isScanning = false
                     appState.loadStorageInfo()
                 }
@@ -93,6 +94,7 @@ struct HomeView: View {
             }
             .onAppear {
                 appState.loadStorageInfo()
+                appState.loadLastScanResult(context: modelContext)
             }
         }
     }
