@@ -1,4 +1,5 @@
 import Foundation
+import SwiftData
 import SwiftUI
 
 @Observable
@@ -23,6 +24,19 @@ final class AppState {
     var storageFraction: Double {
         guard storageTotal > 0 else { return 0 }
         return Double(storageUsed) / Double(storageTotal)
+    }
+
+    func saveScanResult(_ result: ScanResult, context: ModelContext) {
+        context.insert(result)
+        try? context.save()
+        lastScanResult = result
+    }
+
+    func loadLastScanResult(context: ModelContext) {
+        let descriptor = FetchDescriptor<ScanResult>(
+            sortBy: [SortDescriptor(\.scanDate, order: .reverse)]
+        )
+        lastScanResult = try? context.fetch(descriptor).first
     }
 
     func loadStorageInfo() {
