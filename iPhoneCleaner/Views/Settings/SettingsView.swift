@@ -1,16 +1,17 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @AppStorage("blurThreshold") private var blurThreshold: Double = 0.3
-    @AppStorage("similarityThreshold") private var similarityThreshold: Double = 0.80
+    @Environment(AppState.self) private var appState
 
     var body: some View {
+        @Bindable var appState = appState
+
         NavigationStack {
             Form {
                 Section("Detection Sensitivity") {
                     VStack(alignment: .leading) {
-                        Text("Blur Threshold: \(Int(blurThreshold * 100))%")
-                        Slider(value: $blurThreshold, in: 0.1...0.8, step: 0.05)
+                        Text("Blur Threshold: \(Int(appState.scanSettings.blurThreshold * 100))%")
+                        Slider(value: $appState.scanSettings.blurThreshold, in: 0.1...0.8, step: 0.05)
                             .tint(.purple)
                         Text("Lower = more photos flagged as blurry")
                             .font(.caption)
@@ -18,8 +19,11 @@ struct SettingsView: View {
                     }
 
                     VStack(alignment: .leading) {
-                        Text("Similarity Threshold: \(Int(similarityThreshold * 100))%")
-                        Slider(value: $similarityThreshold, in: 0.5...0.99, step: 0.05)
+                        Text("Similarity Threshold: \(Int(Double(appState.scanSettings.similarThreshold) * 100))%")
+                        Slider(value: Binding(
+                            get: { Double(appState.scanSettings.similarThreshold) },
+                            set: { appState.scanSettings.similarThreshold = Float($0) }
+                        ), in: 0.5...0.99, step: 0.05)
                             .tint(.purple)
                         Text("Lower = more photos flagged as similar")
                             .font(.caption)
