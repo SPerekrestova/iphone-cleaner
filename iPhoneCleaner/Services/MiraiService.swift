@@ -4,7 +4,6 @@ import Uzu
 #endif
 
 final class MiraiService {
-    // SDK-dependent properties
     #if canImport(Uzu)
     private var engine: UzuEngine?
     private var chatModel: ChatModel?
@@ -36,7 +35,9 @@ final class MiraiService {
         guard let engine, let model = chatModel else {
             throw MiraiError.notInitialized
         }
+
         let prompt = Self.buildAppSuggestionPrompt(for: apps)
+
         let session = try engine.chatSession(model)
         let input: Input = .messages(messages: [
             Message(role: .system, content: """
@@ -46,8 +47,10 @@ final class MiraiService {
                 """),
             Message(role: .user, content: prompt)
         ])
+
         let config = RunConfig().tokensLimit(512).enableThinking(false)
         let output = try session.run(input: input, config: config) { _ in true }
+
         return output.text.original
         #else
         throw MiraiError.notInitialized
@@ -69,7 +72,7 @@ final class MiraiService {
         return lines.joined(separator: "\n")
     }
 
-    enum MiraiError: Error {
+    enum MiraiError: Swift.Error {
         case notInitialized
         case modelNotLoaded
     }
