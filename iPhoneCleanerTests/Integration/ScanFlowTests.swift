@@ -22,6 +22,7 @@ import Foundation
         screenshotsFound: 100
     )
     #expect(result.totalIssuesFound == 200)
+    #expect(result.totalMediaScanned == 1000)
 }
 
 @Test func photoIssueUserDecisionWorkflow() {

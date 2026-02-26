@@ -6,6 +6,10 @@ enum IssueCategory: String, Codable, CaseIterable, Sendable {
     case similar
     case blurry
     case screenshot
+    case screenRecording
+    case lensSmudge
+    case textHeavy
+    case lowQuality
 
     var displayName: String {
         switch self {
@@ -13,6 +17,10 @@ enum IssueCategory: String, Codable, CaseIterable, Sendable {
         case .similar: "Similar"
         case .blurry: "Blurry"
         case .screenshot: "Screenshots"
+        case .screenRecording: "Screen Recordings"
+        case .lensSmudge: "Lens Smudge"
+        case .textHeavy: "Text Heavy"
+        case .lowQuality: "Low Quality"
         }
     }
 
@@ -22,6 +30,10 @@ enum IssueCategory: String, Codable, CaseIterable, Sendable {
         case .similar: "square.on.square"
         case .blurry: "camera.metering.unknown"
         case .screenshot: "rectangle.on.rectangle"
+        case .screenRecording: "record.circle"
+        case .lensSmudge: "drop.circle"
+        case .textHeavy: "doc.text"
+        case .lowQuality: "exclamationmark.triangle"
         }
     }
 }
@@ -41,6 +53,9 @@ final class PhotoIssue {
     var userDecision: UserDecision
     var groupId: String?
     var embedding: [Float]?
+    var sceneTags: [String]?
+    var aestheticsScore: Float?
+    var isVideo: Bool
     var createdAt: Date
 
     init(
@@ -50,7 +65,10 @@ final class PhotoIssue {
         fileSize: Int64,
         userDecision: UserDecision = .pending,
         groupId: String? = nil,
-        embedding: [Float]? = nil
+        embedding: [Float]? = nil,
+        sceneTags: [String]? = nil,
+        aestheticsScore: Float? = nil,
+        isVideo: Bool = false
     ) {
         self.assetId = assetId
         self.category = category
@@ -59,6 +77,9 @@ final class PhotoIssue {
         self.userDecision = userDecision
         self.groupId = groupId
         self.embedding = embedding
+        self.sceneTags = sceneTags
+        self.aestheticsScore = aestheticsScore
+        self.isVideo = isVideo
         self.createdAt = Date()
     }
 
