@@ -70,7 +70,7 @@ struct HomeView: View {
             .background(Color(.systemBackground))
             .navigationTitle("iPhone Cleaner")
             .fullScreenCover(isPresented: $isScanning) {
-                ScanningView(scanEngine: appState.scanEngine) { result in
+                ScanningView(scanEngine: appState.scanEngine, settings: appState.scanSettings) { result in
                     appState.lastScanResult = result
                     isScanning = false
                     appState.loadStorageInfo()

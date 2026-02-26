@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ScanningView: View {
     let scanEngine: PhotoScanEngine
+    let settings: ScanSettings
     let onComplete: (ScanResult) -> Void
 
     @State private var hasStarted = false
@@ -75,7 +76,7 @@ struct ScanningView: View {
             hasStarted = true
 
             do {
-                let issues = try await scanEngine.scan()
+                let issues = try await scanEngine.scan(settings: settings)
                 let result = ScanResult(
                     totalPhotosScanned: scanEngine.progress.total,
                     duplicatesFound: issues.filter { $0.category == .duplicate }.count,
