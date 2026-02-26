@@ -9,6 +9,7 @@ struct ReviewView: View {
     @State private var currentIndex = 0
     @State private var currentImage: UIImage?
     @State private var showDeleteConfirmation = false
+    @State private var deletionResult: (count: Int, bytes: Int64)?
     @State private var undoStack: [(Int, UserDecision)] = []
     @Environment(\.dismiss) private var dismiss
 
@@ -118,16 +119,32 @@ struct ReviewView: View {
             }
             .alert("Delete Photos?", isPresented: $showDeleteConfirmation) {
                 Button("Delete \(markedForDeletion.count) Photos", role: .destructive) {
+                    let count = markedForDeletion.count
+                    let bytes = totalFreeable
                     Task {
                         let idsToDelete = markedForDeletion.map { $0.assetId }
                         try? await photoService.deleteAssets(idsToDelete)
                         issues.removeAll { $0.userDecision == .delete }
                         currentIndex = min(currentIndex, issues.count)
+                        deletionResult = (count: count, bytes: bytes)
                     }
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
                 Text("This will move \(markedForDeletion.count) photos to Recently Deleted. They can be recovered for 30 days.")
+            }
+            .fullScreenCover(item: Binding(
+                get: { deletionResult.map { DeletionInfo(count: $0.count, bytes: $0.bytes) } },
+                set: { if $0 == nil { deletionResult = nil } }
+            )) { info in
+                DeletionSuccessView(
+                    photosDeleted: info.count,
+                    bytesFreed: info.bytes,
+                    onDismiss: {
+                        deletionResult = nil
+                        dismiss()
+                    }
+                )
             }
             .task(id: currentIndex) {
                 await loadCurrentImage()
@@ -168,4 +185,10 @@ struct ReviewView: View {
             targetSize: CGSize(width: 600, height: 600)
         )
     }
+}
+
+private struct DeletionInfo: Identifiable {
+    let id = UUID()
+    let count: Int
+    let bytes: Int64
 }
