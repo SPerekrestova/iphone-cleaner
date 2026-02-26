@@ -6,7 +6,7 @@ import SwiftUI
 final class AppState {
     let scanEngine = PhotoScanEngine()
     let photoService = PhotoLibraryService()
-    let miraiService = MiraiService()
+
 
     var scanSettings = ScanSettings()
     var lastScanResult: ScanResult?
