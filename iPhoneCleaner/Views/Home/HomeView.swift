@@ -2,7 +2,7 @@ import SwiftUI
 import Photos
 
 struct HomeView: View {
-    @State private var viewModel = HomeViewModel()
+    @Environment(AppState.self) private var appState
     @State private var isScanning = false
     @State private var showReview = false
     @State private var showPermission = false
@@ -14,9 +14,9 @@ struct HomeView: View {
                 VStack(spacing: 24) {
                     // Storage Ring
                     StorageRingView(
-                        fraction: viewModel.storageFraction,
-                        usedText: viewModel.storageUsedFormatted,
-                        totalText: viewModel.storageTotalFormatted
+                        fraction: appState.storageFraction,
+                        usedText: appState.storageUsedFormatted,
+                        totalText: appState.storageTotalFormatted
                     )
                     .padding(.top)
 
@@ -33,20 +33,14 @@ struct HomeView: View {
                             .font(.headline)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(
-                                LinearGradient(
-                                    colors: [.purple, .blue],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
+                            .background(Theme.accentGradient)
                             .foregroundStyle(.white)
                             .clipShape(RoundedRectangle(cornerRadius: 14))
                     }
                     .padding(.horizontal)
 
                     // Category Results
-                    if let result = viewModel.lastScanResult {
+                    if let result = appState.lastScanResult {
                         VStack(alignment: .leading, spacing: 12) {
                             Text("Last Scan")
                                 .font(.headline)
@@ -76,17 +70,18 @@ struct HomeView: View {
             .background(Color(.systemBackground))
             .navigationTitle("iPhone Cleaner")
             .fullScreenCover(isPresented: $isScanning) {
-                ScanningView(scanEngine: viewModel.scanEngine) { result in
-                    viewModel.lastScanResult = result
+                ScanningView(scanEngine: appState.scanEngine) { result in
+                    appState.lastScanResult = result
                     isScanning = false
+                    appState.loadStorageInfo()
                 }
             }
             .sheet(isPresented: $showReview) {
                 if let category = selectedCategory {
                     ReviewView(
-                        issues: viewModel.scanEngine.issues.filter { $0.category == category },
+                        issues: appState.scanEngine.issues.filter { $0.category == category },
                         category: category,
-                        photoService: PhotoLibraryService()
+                        photoService: appState.photoService
                     )
                 }
             }
@@ -97,7 +92,7 @@ struct HomeView: View {
                 }
             }
             .onAppear {
-                viewModel.loadStorageInfo()
+                appState.loadStorageInfo()
             }
         }
     }

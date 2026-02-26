@@ -19,7 +19,6 @@
 		4011E23EA7306A62550A93DF /* ImageAnalysisServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3404FAF7FECB29E95BB13883 /* ImageAnalysisServiceTests.swift */; };
 		436D19C4AE8ADD08970BC11B /* PhotoScanEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3104204DCF91186462DCEEF6 /* PhotoScanEngineTests.swift */; };
 		52EECF5F7309161C716A40A1 /* MiraiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555A245BE781D5AC3360907 /* MiraiService.swift */; };
-		5BB4867180B85D61FE266E01 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3FD17D0299244B350D6A11 /* HomeViewModel.swift */; };
 		5CF855AAC29D9C86D189737F /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB101C1E818D93E22183261D /* HomeView.swift */; };
 		61FA0EB3FCE4F1F7BE0C7839 /* ScanningView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97FA47F87CD8C4BAB7F62598 /* ScanningView.swift */; };
 		6207485B200EC56A3BCDF958 /* ReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A40BDF27F2AC5F1F9636234B /* ReviewView.swift */; };
@@ -54,7 +53,6 @@
 		004A0F1C2D0BCCDEB52CFE31 /* AppCleanupViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCleanupViewModel.swift; sourceTree = "<group>"; };
 		033965EAAF8C7C8A2B38F5B8 /* iPhoneCleanerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPhoneCleanerTests.swift; sourceTree = "<group>"; };
 		17116A6110B8244CB07C62BD /* CategoryCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryCardView.swift; sourceTree = "<group>"; };
-		1A3FD17D0299244B350D6A11 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		237C3A8E83CF14FE637420B1 /* MiraiServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiraiServiceTests.swift; sourceTree = "<group>"; };
 		3104204DCF91186462DCEEF6 /* PhotoScanEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoScanEngineTests.swift; sourceTree = "<group>"; };
 		3404FAF7FECB29E95BB13883 /* ImageAnalysisServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageAnalysisServiceTests.swift; sourceTree = "<group>"; };
@@ -254,7 +252,6 @@
 			isa = PBXGroup;
 			children = (
 				004A0F1C2D0BCCDEB52CFE31 /* AppCleanupViewModel.swift */,
-				1A3FD17D0299244B350D6A11 /* HomeViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -365,7 +362,6 @@
 				71F89605AF29C7836ED0D90E /* ContentView.swift in Sources */,
 				0A20BA85D642090601F905E4 /* DeletionSuccessView.swift in Sources */,
 				5CF855AAC29D9C86D189737F /* HomeView.swift in Sources */,
-				5BB4867180B85D61FE266E01 /* HomeViewModel.swift in Sources */,
 				19B6D89F217F0F16700E6DBA /* ImageAnalysisService.swift in Sources */,
 				52EECF5F7309161C716A40A1 /* MiraiService.swift in Sources */,
 				1E9C4133C759AD2259A137FB /* PhotoIssue.swift in Sources */,
