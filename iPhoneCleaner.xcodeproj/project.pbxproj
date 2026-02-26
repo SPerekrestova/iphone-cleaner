@@ -32,6 +32,7 @@
 		DE98FA96FFEB8351A9A1950A /* iPhoneCleanerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE46CC7B0D7AB1653F56A307 /* iPhoneCleanerApp.swift */; };
 		DF3DA5CD9A362B8C3F18D9FD /* ScanFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 736857880AD7C2EDA17DF1CD /* ScanFlowTests.swift */; };
 		E7059BC7DCF8B20CCF404727 /* ScanResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDEFAE1BA5E6FCE5FE45397 /* ScanResult.swift */; };
+		E77D556E235952F56D58AD96 /* VisionAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FCC1C69440AAF81CCA177B1 /* VisionAPITests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +53,7 @@
 		3B477CC8A6328849ED3EE802 /* PhotoPermissionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPermissionView.swift; sourceTree = "<group>"; };
 		455A4A09F7B7EB2CD60105D1 /* PhotoScanEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoScanEngine.swift; sourceTree = "<group>"; };
 		4AD6EBD4B32811A3B6CA869E /* PhotoLibraryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryService.swift; sourceTree = "<group>"; };
+		4FCC1C69440AAF81CCA177B1 /* VisionAPITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionAPITests.swift; sourceTree = "<group>"; };
 		5CDEFAE1BA5E6FCE5FE45397 /* ScanResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanResult.swift; sourceTree = "<group>"; };
 		686181CD92DECBBEFBFB4D0B /* PhotoIssueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoIssueTests.swift; sourceTree = "<group>"; };
 		720CF95771EDBFD366443F55 /* iPhoneCleanerTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = iPhoneCleanerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -221,6 +223,7 @@
 				3404FAF7FECB29E95BB13883 /* ImageAnalysisServiceTests.swift */,
 				D0785C79B8F559FDAAE08735 /* PhotoLibraryServiceTests.swift */,
 				3104204DCF91186462DCEEF6 /* PhotoScanEngineTests.swift */,
+				4FCC1C69440AAF81CCA177B1 /* VisionAPITests.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -326,6 +329,7 @@
 				00FF1B4C6AF420352361A2BF /* PhotoLibraryServiceTests.swift in Sources */,
 				436D19C4AE8ADD08970BC11B /* PhotoScanEngineTests.swift in Sources */,
 				DF3DA5CD9A362B8C3F18D9FD /* ScanFlowTests.swift in Sources */,
+				E77D556E235952F56D58AD96 /* VisionAPITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

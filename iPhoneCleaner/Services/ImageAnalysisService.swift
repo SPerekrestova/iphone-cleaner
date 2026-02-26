@@ -184,4 +184,86 @@ final class ImageAnalysisService {
 
         return groups
     }
+
+    // MARK: - Text Coverage (VNRecognizeTextRequest)
+
+    func textCoverage(for image: UIImage) throws -> Double {
+        guard let cgImage = image.cgImage else { return 0.0 }
+        let request = VNRecognizeTextRequest()
+        request.recognitionLevel = .fast
+        let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+        try handler.perform([request])
+
+        let totalArea = (request.results ?? []).reduce(0.0) { sum, obs in
+            let box = obs.boundingBox
+            return sum + Double(box.width * box.height)
+        }
+        return min(totalArea, 1.0)
+    }
+
+    // MARK: - Scene Classification (VNClassifyImageRequest)
+
+    func classifyScene(for image: UIImage, topK: Int = 5) throws -> [(label: String, confidence: Float)] {
+        guard let cgImage = image.cgImage else { return [] }
+        let request = VNClassifyImageRequest()
+        let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+        do {
+            try handler.perform([request])
+        } catch {
+            // VNClassifyImageRequest requires Neural Engine; fails on simulator
+            return []
+        }
+
+        return (request.results ?? [])
+            .sorted { $0.confidence > $1.confidence }
+            .prefix(topK)
+            .map { ($0.identifier, $0.confidence) }
+    }
+
+    // MARK: - Face Capture Quality
+
+    func faceCaptureQuality(for image: UIImage) throws -> Float? {
+        guard let cgImage = image.cgImage else { return nil }
+        let request = VNDetectFaceCaptureQualityRequest()
+        let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+        do {
+            try handler.perform([request])
+        } catch {
+            // VNDetectFaceCaptureQualityRequest requires Neural Engine; fails on simulator
+            return nil
+        }
+        return request.results?.first?.faceCaptureQuality
+    }
+
+    // MARK: - Image Aesthetics (iOS 18+)
+
+    func aestheticsScore(for image: UIImage) async -> (score: Float, isUtility: Bool)? {
+        guard let ciImage = CIImage(image: image) else { return nil }
+        do {
+            if #available(iOS 18.0, *) {
+                let request = CalculateImageAestheticsScoresRequest()
+                let observation = try await request.perform(on: ciImage)
+                return (observation.overallScore, observation.isUtility)
+            }
+            return nil
+        } catch {
+            return nil
+        }
+    }
+
+    // MARK: - Lens Smudge Detection (iOS 26+)
+
+    func lensSmudgeConfidence(for image: UIImage) async -> Float? {
+        guard let ciImage = CIImage(image: image) else { return nil }
+        do {
+            if #available(iOS 26.0, *) {
+                let request = DetectLensSmudgeRequest()
+                let observation = try await request.perform(on: ciImage)
+                return observation.confidence
+            }
+            return nil
+        } catch {
+            return nil
+        }
+    }
 }
