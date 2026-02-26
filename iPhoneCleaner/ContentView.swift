@@ -10,11 +10,6 @@ struct ContentView: View {
                     Label("Photos", systemImage: "photo.on.rectangle.angled")
                 }
 
-            AppCleanupView()
-                .tabItem {
-                    Label("Apps", systemImage: "square.grid.2x2")
-                }
-
             SettingsView()
                 .tabItem {
                     Label("Settings", systemImage: "gear")

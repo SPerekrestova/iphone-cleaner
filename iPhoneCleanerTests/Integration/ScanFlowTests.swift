@@ -39,18 +39,3 @@ import Foundation
     issue.userDecision = .keep
     #expect(issue.userDecision == .keep)
 }
-
-@Test func appInfoCleanupScoreOrdering() {
-    let oldLargeApp = AppInfo(
-        id: "1", name: "Big Old Game", bundleId: "com.test.game",
-        sizeBytes: 3_000_000_000,
-        lastUsedDate: Calendar.current.date(byAdding: .day, value: -90, to: Date())
-    )
-    let newSmallApp = AppInfo(
-        id: "2", name: "Daily App", bundleId: "com.test.daily",
-        sizeBytes: 10_000_000,
-        lastUsedDate: Date()
-    )
-
-    #expect(oldLargeApp.cleanupScore > newSmallApp.cleanupScore)
-}
