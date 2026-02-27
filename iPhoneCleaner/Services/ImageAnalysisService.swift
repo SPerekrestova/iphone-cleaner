@@ -155,6 +155,77 @@ final class ImageAnalysisService {
         return groups
     }
 
+    // MARK: - Bucketed Similarity Grouping
+
+    func groupBySimilarityBucketed(
+        _ items: [(id: String, embedding: [Float])],
+        threshold: Float,
+        numBuckets: Int = 32
+    ) -> [[String]] {
+        guard items.count > 1, let dim = items.first?.embedding.count, dim > 0 else { return [] }
+
+        // For small sets, brute force is fine
+        if items.count < 200 {
+            return groupBySimilarity(items, threshold: threshold)
+        }
+
+        // Generate random projection vectors for bucketing
+        let numProjections = min(8, dim)
+        var projections: [[Float]] = []
+        for _ in 0..<numProjections {
+            let proj = (0..<dim).map { _ in Float.random(in: -1...1) }
+            let norm = sqrt(proj.reduce(0) { $0 + $1 * $1 })
+            projections.append(proj.map { $0 / norm })
+        }
+
+        // Assign each item a hash based on sign of dot products with projections
+        func hashKey(_ embedding: [Float]) -> Int {
+            var key = 0
+            for (i, proj) in projections.enumerated() {
+                var dot: Float = 0
+                for j in 0..<dim {
+                    dot += embedding[j] * proj[j]
+                }
+                if dot >= 0 { key |= (1 << i) }
+            }
+            return key
+        }
+
+        // Build buckets
+        var buckets: [Int: [Int]] = [:]
+        for (i, item) in items.enumerated() {
+            let key = hashKey(item.embedding)
+            buckets[key, default: []].append(i)
+        }
+
+        // Compare within each bucket
+        var visited = Set<Int>()
+        var groups: [[String]] = []
+
+        for (_, indices) in buckets {
+            for i in indices {
+                if visited.contains(i) { continue }
+                var group = [items[i].id]
+                visited.insert(i)
+
+                for j in indices {
+                    if visited.contains(j) || i == j { continue }
+                    let sim = Self.cosineSimilarity(items[i].embedding, items[j].embedding)
+                    if sim >= threshold {
+                        group.append(items[j].id)
+                        visited.insert(j)
+                    }
+                }
+
+                if group.count > 1 {
+                    groups.append(group)
+                }
+            }
+        }
+
+        return groups
+    }
+
     func groupByFeaturePrint(_ prints: [(id: String, print: VNFeaturePrintObservation)], maxDistance: Float) -> [[String]] {
         var visited = Set<Int>()
         var groups: [[String]] = []
