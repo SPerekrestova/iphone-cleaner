@@ -32,3 +32,15 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
     dependencies:
       - target: iPhoneCleaner
+
+  iPhoneCleanerUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - iPhoneCleanerUITests
+    settings:
+      base:
+        SWIFT_VERSION: "5.9"
+        GENERATE_INFOPLIST_FILE: YES
+    dependencies:
+      - target: iPhoneCleaner
