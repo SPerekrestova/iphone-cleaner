@@ -41,7 +41,7 @@ struct ScanningView: View {
                 }
             }
 
-            Text("Analyzing your photos...")
+            Text("Analyzing your media...")
                 .font(.title3)
                 .foregroundStyle(.secondary)
 
@@ -83,6 +83,10 @@ struct ScanningView: View {
                     similarFound: issues.filter { $0.category == .similar }.count,
                     blurryFound: issues.filter { $0.category == .blurry }.count,
                     screenshotsFound: issues.filter { $0.category == .screenshot }.count,
+                    screenRecordingsFound: issues.filter { $0.category == .screenRecording }.count,
+                    lensSmudgeFound: issues.filter { $0.category == .lensSmudge }.count,
+                    textHeavyFound: issues.filter { $0.category == .textHeavy }.count,
+                    lowQualityFound: issues.filter { $0.category == .lowQuality }.count,
                     totalSizeReclaimable: issues.reduce(0) { $0 + $1.fileSize }
                 )
                 onComplete(result)

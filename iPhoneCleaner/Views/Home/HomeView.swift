@@ -47,21 +47,14 @@ struct HomeView: View {
                                 .font(.headline)
                                 .padding(.horizontal)
 
-                            CategoryCardView(category: .duplicate, count: result.duplicatesFound) {
-                                selectedCategory = .duplicate
-                                showReview = true
-                            }
-                            CategoryCardView(category: .similar, count: result.similarFound) {
-                                selectedCategory = .similar
-                                showReview = true
-                            }
-                            CategoryCardView(category: .blurry, count: result.blurryFound) {
-                                selectedCategory = .blurry
-                                showReview = true
-                            }
-                            CategoryCardView(category: .screenshot, count: result.screenshotsFound) {
-                                selectedCategory = .screenshot
-                                showReview = true
+                            ForEach(IssueCategory.allCases, id: \.self) { category in
+                                let count = countForCategory(category, in: result)
+                                if count > 0 {
+                                    CategoryCardView(category: category, count: count) {
+                                        selectedCategory = category
+                                        showReview = true
+                                    }
+                                }
                             }
                         }
                         .padding(.horizontal)
@@ -96,6 +89,19 @@ struct HomeView: View {
                 appState.loadStorageInfo()
                 appState.loadLastScanResult(context: modelContext)
             }
+        }
+    }
+
+    private func countForCategory(_ category: IssueCategory, in result: ScanResult) -> Int {
+        switch category {
+        case .duplicate: result.duplicatesFound
+        case .similar: result.similarFound
+        case .blurry: result.blurryFound
+        case .screenshot: result.screenshotsFound
+        case .screenRecording: result.screenRecordingsFound
+        case .lensSmudge: result.lensSmudgeFound
+        case .textHeavy: result.textHeavyFound
+        case .lowQuality: result.lowQualityFound
         }
     }
 }

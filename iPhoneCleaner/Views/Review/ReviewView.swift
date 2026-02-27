@@ -180,7 +180,7 @@ struct ReviewView: View {
             options: nil
         )
         guard let asset = fetchResult.firstObject else { return }
-        currentImage = await photoService.loadImage(
+        currentImage = await photoService.loadImageWithTimeout(
             for: asset,
             targetSize: CGSize(width: 600, height: 600)
         )
