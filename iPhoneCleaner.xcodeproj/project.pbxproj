@@ -36,6 +36,7 @@
 		DF3DA5CD9A362B8C3F18D9FD /* ScanFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 736857880AD7C2EDA17DF1CD /* ScanFlowTests.swift */; };
 		E7059BC7DCF8B20CCF404727 /* ScanResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDEFAE1BA5E6FCE5FE45397 /* ScanResult.swift */; };
 		E77D556E235952F56D58AD96 /* VisionAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FCC1C69440AAF81CCA177B1 /* VisionAPITests.swift */; };
+		FAB71C381F4E5ABA3B97BBB6 /* PerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72BD8701DE1E66A7DB0F21AD /* PerformanceTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +70,7 @@
 		5CDEFAE1BA5E6FCE5FE45397 /* ScanResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanResult.swift; sourceTree = "<group>"; };
 		686181CD92DECBBEFBFB4D0B /* PhotoIssueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoIssueTests.swift; sourceTree = "<group>"; };
 		720CF95771EDBFD366443F55 /* iPhoneCleanerTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = iPhoneCleanerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		72BD8701DE1E66A7DB0F21AD /* PerformanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerformanceTests.swift; sourceTree = "<group>"; };
 		736857880AD7C2EDA17DF1CD /* ScanFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanFlowTests.swift; sourceTree = "<group>"; };
 		88CE6481C06E721C1062DB20 /* PhotoIssue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoIssue.swift; sourceTree = "<group>"; };
 		919F0D8ACA84FE591D512A91 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
@@ -228,6 +230,7 @@
 				6AB667F8CABC379173B586C3 /* App */,
 				4144E3C995E6F8F071785FA9 /* Integration */,
 				3CC399B433DB0FE22A6C10C9 /* Models */,
+				D89A723222E8C1095125BE8A /* Performance */,
 				E963A49501596C88DE9DCD24 /* Services */,
 			);
 			path = iPhoneCleanerTests;
@@ -239,6 +242,14 @@
 				0CD878B1B4D613AFA79FAAB6 /* iPhoneCleanerUITests.swift */,
 			);
 			path = iPhoneCleanerUITests;
+			sourceTree = "<group>";
+		};
+		D89A723222E8C1095125BE8A /* Performance */ = {
+			isa = PBXGroup;
+			children = (
+				72BD8701DE1E66A7DB0F21AD /* PerformanceTests.swift */,
+			);
+			path = Performance;
 			sourceTree = "<group>";
 		};
 		E963A49501596C88DE9DCD24 /* Services */ = {
@@ -383,6 +394,7 @@
 			files = (
 				A1610A7CB564318ED71BA5EB /* AppStateTests.swift in Sources */,
 				4011E23EA7306A62550A93DF /* ImageAnalysisServiceTests.swift in Sources */,
+				FAB71C381F4E5ABA3B97BBB6 /* PerformanceTests.swift in Sources */,
 				0B5E9B0568CC867871AA24CA /* PhotoIssueTests.swift in Sources */,
 				00FF1B4C6AF420352361A2BF /* PhotoLibraryServiceTests.swift in Sources */,
 				436D19C4AE8ADD08970BC11B /* PhotoScanEngineTests.swift in Sources */,
