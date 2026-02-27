@@ -16,6 +16,9 @@ final class ScanResult {
     var lowQualityFound: Int
     var totalSizeReclaimable: Int64
 
+    @Relationship(deleteRule: .cascade)
+    var issues: [PhotoIssue] = []
+
     init(
         totalPhotosScanned: Int = 0,
         totalVideosScanned: Int = 0,

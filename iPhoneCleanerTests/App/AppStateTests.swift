@@ -29,3 +29,11 @@ import Foundation
     #expect(state.storageTotal > 0)
     #expect(state.storageUsed > 0)
 }
+
+@Test func scanResultRelationshipToIssues() {
+    let result = ScanResult(totalPhotosScanned: 100, blurryFound: 5)
+    let issue = PhotoIssue(assetId: "test", category: .blurry, confidence: 0.9, fileSize: 500_000)
+    result.issues.append(issue)
+    #expect(result.issues.count == 1)
+    #expect(result.issues.first?.assetId == "test")
+}

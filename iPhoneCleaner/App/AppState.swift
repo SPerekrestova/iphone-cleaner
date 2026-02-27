@@ -10,6 +10,7 @@ final class AppState {
 
     var scanSettings = ScanSettings()
     var lastScanResult: ScanResult?
+    var lastScanIssues: [PhotoIssue] = []
     var storageUsed: Int64 = 0
     var storageTotal: Int64 = 0
 
@@ -26,17 +27,22 @@ final class AppState {
         return Double(storageUsed) / Double(storageTotal)
     }
 
-    func saveScanResult(_ result: ScanResult, context: ModelContext) {
+    func saveScanResult(_ result: ScanResult, issues: [PhotoIssue], context: ModelContext) {
+        result.issues = issues
         context.insert(result)
         try? context.save()
         lastScanResult = result
+        lastScanIssues = issues
     }
 
     func loadLastScanResult(context: ModelContext) {
         let descriptor = FetchDescriptor<ScanResult>(
             sortBy: [SortDescriptor(\.scanDate, order: .reverse)]
         )
-        lastScanResult = try? context.fetch(descriptor).first
+        if let result = try? context.fetch(descriptor).first {
+            lastScanResult = result
+            lastScanIssues = result.issues
+        }
     }
 
     func loadStorageInfo() {

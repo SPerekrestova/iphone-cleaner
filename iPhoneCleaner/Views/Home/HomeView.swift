@@ -72,7 +72,7 @@ struct HomeView: View {
             .navigationTitle("iPhone Cleaner")
             .fullScreenCover(isPresented: $isScanning) {
                 ScanningView(scanEngine: appState.scanEngine, settings: appState.scanSettings) { result in
-                    appState.saveScanResult(result, context: modelContext)
+                    appState.saveScanResult(result, issues: appState.scanEngine.issues, context: modelContext)
                     isScanning = false
                     appState.loadStorageInfo()
                 }
@@ -80,7 +80,7 @@ struct HomeView: View {
             .sheet(isPresented: $showReview) {
                 if let category = selectedCategory {
                     ReviewView(
-                        issues: appState.scanEngine.issues.filter { $0.category == category },
+                        issues: appState.lastScanIssues.filter { $0.category == category },
                         category: category,
                         photoService: appState.photoService
                     )
