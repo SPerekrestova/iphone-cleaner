@@ -27,6 +27,7 @@
 		76242C66ECCBE460AA3E6BF2 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24D3C5B5467DD67BD9E601C /* SettingsView.swift */; };
 		7E36C64D01E9FAC35AF4AFE3 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B678E4D47BCC153B77B8CCA6 /* Theme.swift */; };
 		A1610A7CB564318ED71BA5EB /* AppStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 973E646F8CFFA849539ED4D1 /* AppStateTests.swift */; };
+		AFE0D13A5A3AA6FA6E8120A0 /* iPhoneCleanerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD878B1B4D613AFA79FAAB6 /* iPhoneCleanerUITests.swift */; };
 		B32934C289FFE1FFE6B3F877 /* CategoryCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17116A6110B8244CB07C62BD /* CategoryCardView.swift */; };
 		D3FE617B24057AB3B0AEA1D1 /* StorageRingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7F7E4B43C066F6C5C5CA0A7 /* StorageRingView.swift */; };
 		D640C36A6D330321E973C7CF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0D9CC87BE3DDF14E9D6F3359 /* Assets.xcassets */; };
@@ -38,6 +39,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		3756211FFC9A678B5F878F2E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 59690AB01F77EDBCB1A8BB55 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 500F70FBD3CB82F1BA0E8DAF;
+			remoteInfo = iPhoneCleaner;
+		};
 		E6F40A9552FCCF1D3AB4C0D9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 59690AB01F77EDBCB1A8BB55 /* Project object */;
@@ -48,8 +56,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0CD878B1B4D613AFA79FAAB6 /* iPhoneCleanerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPhoneCleanerUITests.swift; sourceTree = "<group>"; };
 		0D9CC87BE3DDF14E9D6F3359 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		17116A6110B8244CB07C62BD /* CategoryCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryCardView.swift; sourceTree = "<group>"; };
+		175710657AA1FE2E478B6DEF /* iPhoneCleanerUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = iPhoneCleanerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3104204DCF91186462DCEEF6 /* PhotoScanEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoScanEngineTests.swift; sourceTree = "<group>"; };
 		3404FAF7FECB29E95BB13883 /* ImageAnalysisServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageAnalysisServiceTests.swift; sourceTree = "<group>"; };
 		3B477CC8A6328849ED3EE802 /* PhotoPermissionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPermissionView.swift; sourceTree = "<group>"; };
@@ -108,6 +118,7 @@
 			children = (
 				AA8779FE57D1638B9E31FE50 /* iPhoneCleaner.app */,
 				720CF95771EDBFD366443F55 /* iPhoneCleanerTests.xctest */,
+				175710657AA1FE2E478B6DEF /* iPhoneCleanerUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -179,6 +190,7 @@
 			children = (
 				03CF637D62723D8652A7F794 /* iPhoneCleaner */,
 				C2C57FD6ED0A7DD59B690A8A /* iPhoneCleanerTests */,
+				CAEA050AC5473F7023478815 /* iPhoneCleanerUITests */,
 				1EB994590B25FBADFC36929B /* Products */,
 			);
 			sourceTree = "<group>";
@@ -219,6 +231,14 @@
 				E963A49501596C88DE9DCD24 /* Services */,
 			);
 			path = iPhoneCleanerTests;
+			sourceTree = "<group>";
+		};
+		CAEA050AC5473F7023478815 /* iPhoneCleanerUITests */ = {
+			isa = PBXGroup;
+			children = (
+				0CD878B1B4D613AFA79FAAB6 /* iPhoneCleanerUITests.swift */,
+			);
+			path = iPhoneCleanerUITests;
 			sourceTree = "<group>";
 		};
 		E963A49501596C88DE9DCD24 /* Services */ = {
@@ -284,6 +304,24 @@
 			productReference = AA8779FE57D1638B9E31FE50 /* iPhoneCleaner.app */;
 			productType = "com.apple.product-type.application";
 		};
+		9E0FB7C8C7D09916746D96A8 /* iPhoneCleanerUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 94DDB9EA4ED83EC51121CE6B /* Build configuration list for PBXNativeTarget "iPhoneCleanerUITests" */;
+			buildPhases = (
+				47EC6DC9BC278D998C053A46 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D37A8D7CA3292FC282BB4EFB /* PBXTargetDependency */,
+			);
+			name = iPhoneCleanerUITests;
+			packageProductDependencies = (
+			);
+			productName = iPhoneCleanerUITests;
+			productReference = 175710657AA1FE2E478B6DEF /* iPhoneCleanerUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -292,6 +330,11 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					9E0FB7C8C7D09916746D96A8 = {
+						TestTargetID = 500F70FBD3CB82F1BA0E8DAF;
+					};
+				};
 			};
 			buildConfigurationList = 3473DEDB33799515FCF3AAF3 /* Build configuration list for PBXProject "iPhoneCleaner" */;
 			compatibilityVersion = "Xcode 14.0";
@@ -309,6 +352,7 @@
 			targets = (
 				500F70FBD3CB82F1BA0E8DAF /* iPhoneCleaner */,
 				1894416D49371D04F6D08955 /* iPhoneCleanerTests */,
+				9E0FB7C8C7D09916746D96A8 /* iPhoneCleanerUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -325,6 +369,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		47EC6DC9BC278D998C053A46 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AFE0D13A5A3AA6FA6E8120A0 /* iPhoneCleanerUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		66E33A3152CDA3EE594ADC09 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -369,6 +421,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		D37A8D7CA3292FC282BB4EFB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 500F70FBD3CB82F1BA0E8DAF /* iPhoneCleaner */;
+			targetProxy = 3756211FFC9A678B5F878F2E /* PBXContainerItemProxy */;
+		};
 		F855A54AD9F8458C3B18A877 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 500F70FBD3CB82F1BA0E8DAF /* iPhoneCleaner */;
@@ -432,6 +489,24 @@
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
+		};
+		147054644214EA440924ECAE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.svetlana.iPhoneCleanerUITests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iPhoneCleaner;
+			};
+			name = Debug;
 		};
 		3E5C7EB253AAA7A226E29D2F /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -576,6 +651,24 @@
 			};
 			name = Debug;
 		};
+		FE561AF42255835EA2299D7C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.svetlana.iPhoneCleanerUITests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iPhoneCleaner;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -593,6 +686,15 @@
 			buildConfigurations = (
 				4AD0BFBA32003A543789B607 /* Debug */,
 				0353DA619A702E953B5AC3ED /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		94DDB9EA4ED83EC51121CE6B /* Build configuration list for PBXNativeTarget "iPhoneCleanerUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				147054644214EA440924ECAE /* Debug */,
+				FE561AF42255835EA2299D7C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
