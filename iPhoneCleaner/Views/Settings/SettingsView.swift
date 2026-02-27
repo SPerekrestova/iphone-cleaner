@@ -29,6 +29,15 @@ struct SettingsView: View {
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
+
+                    VStack(alignment: .leading) {
+                        Text("Text Coverage: \(Int(appState.scanSettings.textCoverageThreshold * 100))%")
+                        Slider(value: $appState.scanSettings.textCoverageThreshold, in: 0.05...0.5, step: 0.05)
+                            .tint(.purple)
+                        Text("Lower = more images flagged as text-heavy")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
 
                 Section("Privacy") {
