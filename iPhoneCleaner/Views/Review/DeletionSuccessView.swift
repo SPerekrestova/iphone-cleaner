@@ -28,10 +28,12 @@ struct DeletionSuccessView: View {
             VStack(spacing: 8) {
                 Text("\(photosDeleted) photos deleted")
                     .font(.title2.bold())
+                    .accessibilityIdentifier("deletionCount")
 
                 Text("\(ByteCountFormatter.string(fromByteCount: bytesFreed, countStyle: .file)) freed")
                     .font(.title3)
                     .foregroundStyle(.purple)
+                    .accessibilityIdentifier("deletionSize")
             }
             .opacity(showText ? 1 : 0)
             .animation(.easeIn(duration: 0.3).delay(0.4), value: showText)
@@ -55,6 +57,7 @@ struct DeletionSuccessView: View {
             .clipShape(RoundedRectangle(cornerRadius: 14))
             .padding(.horizontal)
             .padding(.bottom)
+            .accessibilityIdentifier("deletionDoneButton")
         }
         .background(Color(.systemBackground))
         .onAppear {

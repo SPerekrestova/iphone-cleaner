@@ -37,6 +37,7 @@ struct HomeView: View {
                             .foregroundStyle(.white)
                             .clipShape(RoundedRectangle(cornerRadius: 14))
                     }
+                    .accessibilityIdentifier("scanButton")
                     .padding(.horizontal)
 
                     // Category Results

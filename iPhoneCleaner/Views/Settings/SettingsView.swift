@@ -11,8 +11,10 @@ struct SettingsView: View {
                 Section("Detection Sensitivity") {
                     VStack(alignment: .leading) {
                         Text("Blur Threshold: \(Int(appState.scanSettings.blurThreshold * 100))%")
+                            .accessibilityIdentifier("blurThresholdLabel")
                         Slider(value: $appState.scanSettings.blurThreshold, in: 0.1...0.8, step: 0.05)
                             .tint(.purple)
+                            .accessibilityIdentifier("blurThresholdSlider")
                         Text("Lower = more photos flagged as blurry")
                             .font(.caption)
                             .foregroundStyle(.secondary)
@@ -20,11 +22,13 @@ struct SettingsView: View {
 
                     VStack(alignment: .leading) {
                         Text("Similarity Threshold: \(Int(Double(appState.scanSettings.similarThreshold) * 100))%")
+                            .accessibilityIdentifier("similarThresholdLabel")
                         Slider(value: Binding(
                             get: { Double(appState.scanSettings.similarThreshold) },
                             set: { appState.scanSettings.similarThreshold = Float($0) }
                         ), in: 0.5...0.99, step: 0.05)
                             .tint(.purple)
+                            .accessibilityIdentifier("similarThresholdSlider")
                         Text("Lower = more photos flagged as similar")
                             .font(.caption)
                             .foregroundStyle(.secondary)
@@ -32,8 +36,10 @@ struct SettingsView: View {
 
                     VStack(alignment: .leading) {
                         Text("Text Coverage: \(Int(appState.scanSettings.textCoverageThreshold * 100))%")
+                            .accessibilityIdentifier("textCoverageLabel")
                         Slider(value: $appState.scanSettings.textCoverageThreshold, in: 0.05...0.5, step: 0.05)
                             .tint(.purple)
+                            .accessibilityIdentifier("textCoverageSlider")
                         Text("Lower = more images flagged as text-heavy")
                             .font(.caption)
                             .foregroundStyle(.secondary)

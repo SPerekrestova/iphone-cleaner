@@ -42,12 +42,14 @@ struct SwipeCardView: View {
                         .padding(.vertical, 4)
                         .background(.purple.opacity(0.2))
                         .clipShape(Capsule())
+                        .accessibilityIdentifier("swipeCardCategory")
 
                     Spacer()
 
                     Text("\(Int(confidence * 100))% match")
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                        .accessibilityIdentifier("confidenceText")
                 }
                 .padding(.horizontal)
                 .padding(.bottom, 12)
@@ -58,14 +60,14 @@ struct SwipeCardView: View {
                 Image(systemName: "trash.fill")
                     .font(.system(size: 50))
                     .foregroundStyle(.red)
-                    .opacity(offset.width < -50 ? Double(-offset.width - 50) / 100.0 : 0)
+                    .opacity(offset.width < -50 ? min(Double(-offset.width - 50) / 100.0, 1.0) : 0)
 
                 Spacer()
 
                 Image(systemName: "checkmark.circle.fill")
                     .font(.system(size: 50))
                     .foregroundStyle(.green)
-                    .opacity(offset.width > 50 ? Double(offset.width - 50) / 100.0 : 0)
+                    .opacity(offset.width > 50 ? min(Double(offset.width - 50) / 100.0, 1.0) : 0)
             }
             .padding(.horizontal, 30)
         }
