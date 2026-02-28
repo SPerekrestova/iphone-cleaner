@@ -157,4 +157,131 @@ final class iPhoneCleanerUITests: XCTestCase {
         XCTAssertTrue(duplicatesCard.waitForExistence(timeout: 2),
                        "Category cards should still be visible after dismissing review")
     }
+
+    // MARK: - Review Flow Tests
+
+    func testSkipThroughAllItemsShowsAllReviewed() {
+        launchWithSeedData()
+
+        // Open Blurry category (2 items — easiest to skip through)
+        let blurryCard = app.buttons.matching(
+            NSPredicate(format: "label CONTAINS 'Blurry'")
+        ).firstMatch
+        XCTAssertTrue(blurryCard.waitForExistence(timeout: 3))
+        blurryCard.tap()
+
+        let reviewNavBar = app.navigationBars["Blurry"]
+        XCTAssertTrue(reviewNavBar.waitForExistence(timeout: 3))
+
+        // Skip through both items using the forward button
+        let skipButton = app.buttons["Forward"]
+        XCTAssertTrue(skipButton.waitForExistence(timeout: 2))
+
+        skipButton.tap()
+        sleep(1)
+        skipButton.tap()
+        sleep(1)
+
+        // "All reviewed!" should appear
+        let allReviewed = app.staticTexts["All reviewed!"]
+        XCTAssertTrue(allReviewed.waitForExistence(timeout: 3),
+                       "After skipping all items, 'All reviewed!' should appear")
+    }
+
+    func testProgressTextNotBogusAfterAllReviewed() {
+        launchWithSeedData()
+
+        // Open Blurry category (2 items)
+        let blurryCard = app.buttons.matching(
+            NSPredicate(format: "label CONTAINS 'Blurry'")
+        ).firstMatch
+        XCTAssertTrue(blurryCard.waitForExistence(timeout: 3))
+        blurryCard.tap()
+
+        XCTAssertTrue(app.navigationBars["Blurry"].waitForExistence(timeout: 3))
+
+        // Verify initial progress text is "1 of 2"
+        let initialProgress = app.staticTexts["1 of 2"]
+        XCTAssertTrue(initialProgress.waitForExistence(timeout: 2),
+                       "Initial progress should show '1 of 2'")
+
+        // Skip both items
+        let skipButton = app.buttons["Forward"]
+        skipButton.tap()
+        sleep(1)
+
+        // After first skip, should show "2 of 2"
+        let secondProgress = app.staticTexts["2 of 2"]
+        XCTAssertTrue(secondProgress.waitForExistence(timeout: 2),
+                       "After first skip, progress should show '2 of 2'")
+
+        skipButton.tap()
+        sleep(1)
+
+        // After all reviewed, progress should NOT show "3 of 2"
+        let bogusProgress = app.staticTexts["3 of 2"]
+        XCTAssertFalse(bogusProgress.exists,
+                        "Progress text should NOT show '3 of 2' after all items reviewed")
+    }
+
+    func testOpenCategoryDismissThenOpenDifferentCategory() {
+        launchWithSeedData()
+
+        // Open Duplicates first
+        let duplicatesCard = app.buttons.matching(
+            NSPredicate(format: "label CONTAINS 'Duplicates'")
+        ).firstMatch
+        XCTAssertTrue(duplicatesCard.waitForExistence(timeout: 3))
+        duplicatesCard.tap()
+
+        XCTAssertTrue(app.navigationBars["Duplicates"].waitForExistence(timeout: 3))
+
+        // Dismiss
+        app.buttons["Done"].tap()
+        XCTAssertTrue(app.navigationBars["iPhone Cleaner"].waitForExistence(timeout: 3))
+
+        // Now open Screenshots
+        let screenshotsCard = app.buttons.matching(
+            NSPredicate(format: "label CONTAINS 'Screenshots'")
+        ).firstMatch
+        XCTAssertTrue(screenshotsCard.waitForExistence(timeout: 3))
+        screenshotsCard.tap()
+
+        // Should show Screenshots, not Duplicates
+        let screenshotsNavBar = app.navigationBars["Screenshots"]
+        XCTAssertTrue(screenshotsNavBar.waitForExistence(timeout: 3),
+                       "Opening a different category after dismissing should show correct title")
+
+        let progressText = app.staticTexts.matching(
+            NSPredicate(format: "label CONTAINS 'of 5'")
+        ).firstMatch
+        XCTAssertTrue(progressText.waitForExistence(timeout: 2),
+                       "Second category should show its own issue count")
+    }
+
+    func testDeleteAllButtonShowsConfirmationAlert() {
+        launchWithSeedData()
+
+        let duplicatesCard = app.buttons.matching(
+            NSPredicate(format: "label CONTAINS 'Duplicates'")
+        ).firstMatch
+        XCTAssertTrue(duplicatesCard.waitForExistence(timeout: 3))
+        duplicatesCard.tap()
+
+        XCTAssertTrue(app.navigationBars["Duplicates"].waitForExistence(timeout: 3))
+
+        // Tap Delete All button
+        let deleteAllButton = app.buttons["Delete All"]
+        XCTAssertTrue(deleteAllButton.waitForExistence(timeout: 2))
+        deleteAllButton.tap()
+
+        // Should show confirmation alert
+        let alert = app.alerts["Delete Photos?"]
+        XCTAssertTrue(alert.waitForExistence(timeout: 3),
+                       "Tapping Delete All should show confirmation alert")
+
+        // Cancel should dismiss the alert
+        alert.buttons["Cancel"].tap()
+        XCTAssertFalse(alert.exists, "Cancel should dismiss the alert")
+    }
 }

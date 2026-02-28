@@ -33,7 +33,7 @@ struct ReviewView: View {
                     .tint(.purple)
                     .padding(.horizontal)
 
-                Text("\(currentIndex + 1) of \(issues.count)")
+                Text("\(min(currentIndex + 1, issues.count)) of \(issues.count)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
 
