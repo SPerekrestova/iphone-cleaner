@@ -256,6 +256,40 @@ final class ImageAnalysisService {
         return groups
     }
 
+    // MARK: - Saliency-Weighted Blur Detection
+
+    /// Crops a CGImage to the given Vision normalized bounding box (origin bottom-left, 0-1).
+    func croppedToSalientRegion(_ cgImage: CGImage, boundingBox: CGRect) -> CGImage? {
+        let w = CGFloat(cgImage.width)
+        let h = CGFloat(cgImage.height)
+        let cropRect = CGRect(
+            x: boundingBox.origin.x * w,
+            y: (1.0 - boundingBox.origin.y - boundingBox.height) * h,
+            width: boundingBox.width * w,
+            height: boundingBox.height * h
+        )
+        return cgImage.cropping(to: cropRect)
+    }
+
+    func salientRegionBlurScore(for image: UIImage) throws -> Double {
+        guard let cgImage = image.cgImage else { return 0.0 }
+
+        let saliencyRequest = VNGenerateAttentionBasedSaliencyImageRequest()
+        let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+        try handler.perform([saliencyRequest])
+
+        guard let observation = saliencyRequest.results?.first,
+              let salientObject = observation.salientObjects?.first else {
+            return try blurScore(for: image)
+        }
+
+        guard let cropped = croppedToSalientRegion(cgImage, boundingBox: salientObject.boundingBox) else {
+            return try blurScore(for: image)
+        }
+
+        return try blurScore(for: UIImage(cgImage: cropped))
+    }
+
     // MARK: - Text Coverage (VNRecognizeTextRequest)
 
     func textCoverage(for image: UIImage) throws -> Double {
