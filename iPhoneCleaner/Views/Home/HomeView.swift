@@ -5,7 +5,6 @@ struct HomeView: View {
     @Environment(AppState.self) private var appState
     @Environment(\.modelContext) private var modelContext
     @State private var isScanning = false
-    @State private var showReview = false
     @State private var showPermission = false
     @State private var selectedCategory: IssueCategory?
 
@@ -52,7 +51,6 @@ struct HomeView: View {
                                 if count > 0 {
                                     CategoryCardView(category: category, count: count) {
                                         selectedCategory = category
-                                        showReview = true
                                     }
                                 }
                             }
@@ -70,14 +68,12 @@ struct HomeView: View {
                     appState.loadStorageInfo()
                 }
             }
-            .sheet(isPresented: $showReview) {
-                if let category = selectedCategory {
-                    ReviewView(
-                        issues: appState.lastScanIssues.filter { $0.category == category },
-                        category: category,
-                        photoService: appState.photoService
-                    )
-                }
+            .sheet(item: $selectedCategory) { category in
+                ReviewView(
+                    issues: appState.lastScanIssues.filter { $0.category == category },
+                    category: category,
+                    photoService: appState.photoService
+                )
             }
             .sheet(isPresented: $showPermission) {
                 PhotoPermissionView {
