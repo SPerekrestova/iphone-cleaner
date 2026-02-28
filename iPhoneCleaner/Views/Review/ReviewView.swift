@@ -2,54 +2,43 @@ import SwiftUI
 import Photos
 
 struct ReviewView: View {
-    @State var issues: [PhotoIssue]
-    let category: IssueCategory
+    @State private var viewModel: ReviewViewModel
     let photoService: PhotoLibraryService
 
-    @State private var currentIndex = 0
     @State private var currentImage: UIImage?
     @State private var showDeleteConfirmation = false
-    @State private var deletionResult: (count: Int, bytes: Int64)?
-    @State private var undoStack: [(Int, UserDecision)] = []
+    @State private var showDeletionError = false
     @Environment(\.dismiss) private var dismiss
 
-    private var pendingIssues: [PhotoIssue] {
-        issues.filter { $0.userDecision == .pending }
-    }
-
-    private var markedForDeletion: [PhotoIssue] {
-        issues.filter { $0.userDecision == .delete }
-    }
-
-    private var totalFreeable: Int64 {
-        markedForDeletion.reduce(0) { $0 + $1.fileSize }
+    init(issues: [PhotoIssue], category: IssueCategory, photoService: PhotoLibraryService) {
+        self._viewModel = State(initialValue: ReviewViewModel(issues: issues, category: category))
+        self.photoService = photoService
     }
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 16) {
                 // Progress
-                ProgressView(value: Double(currentIndex), total: Double(max(issues.count, 1)))
+                ProgressView(value: Double(viewModel.currentIndex), total: Double(max(viewModel.issues.count, 1)))
                     .tint(.purple)
                     .padding(.horizontal)
 
-                Text("\(min(currentIndex + 1, issues.count)) of \(issues.count)")
+                Text("\(min(viewModel.currentIndex + 1, viewModel.issues.count)) of \(viewModel.issues.count)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .accessibilityIdentifier("reviewProgress")
 
                 // Swipe card
-                if currentIndex < issues.count {
-                    let issue = issues[currentIndex]
+                if let issue = viewModel.currentIssue {
                     SwipeCardView(
                         image: currentImage,
                         category: issue.category,
                         confidence: issue.confidence,
                         onSwipeLeft: {
-                            markForDeletion()
+                            viewModel.markForDeletion()
                         },
                         onSwipeRight: {
-                            keepPhoto()
+                            viewModel.keepPhoto()
                         }
                     )
                     .padding(.horizontal)
@@ -61,8 +50,8 @@ struct ReviewView: View {
                         Text("All reviewed!")
                             .font(.title2.bold())
                             .accessibilityIdentifier("allReviewedText")
-                        if !markedForDeletion.isEmpty {
-                            Text("\(markedForDeletion.count) photos marked for deletion")
+                        if !viewModel.markedForDeletion.isEmpty {
+                            Text("\(viewModel.markedForDeletion.count) photos marked for deletion")
                                 .foregroundStyle(.secondary)
                         }
                     }
@@ -73,12 +62,12 @@ struct ReviewView: View {
                 HStack(spacing: 40) {
                     // Undo
                     Button {
-                        undoLast()
+                        viewModel.undo()
                     } label: {
                         Image(systemName: "arrow.uturn.backward.circle.fill")
                             .font(.title)
                     }
-                    .disabled(undoStack.isEmpty)
+                    .disabled(viewModel.undoStack.isEmpty)
                     .accessibilityIdentifier("undoButton")
 
                     // Delete All
@@ -97,25 +86,25 @@ struct ReviewView: View {
 
                     // Skip
                     Button {
-                        keepPhoto()
+                        viewModel.keepPhoto()
                     } label: {
                         Image(systemName: "forward.fill")
                             .font(.title)
                     }
-                    .disabled(currentIndex >= issues.count)
+                    .disabled(viewModel.currentIndex >= viewModel.issues.count)
                     .accessibilityIdentifier("skipButton")
                 }
                 .padding()
             }
-            .navigationTitle(category.displayName)
+            .navigationTitle(viewModel.category.displayName)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Done") { dismiss() }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    if !markedForDeletion.isEmpty {
-                        Button("Delete \(markedForDeletion.count)") {
+                    if !viewModel.markedForDeletion.isEmpty {
+                        Button("Delete \(viewModel.markedForDeletion.count)") {
                             showDeleteConfirmation = true
                         }
                         .tint(.red)
@@ -123,65 +112,68 @@ struct ReviewView: View {
                 }
             }
             .alert("Delete Photos?", isPresented: $showDeleteConfirmation) {
-                Button("Delete \(markedForDeletion.count) Photos", role: .destructive) {
-                    let count = markedForDeletion.count
-                    let bytes = totalFreeable
+                Button("Delete \(viewModel.markedForDeletion.count) Photos", role: .destructive) {
                     Task {
-                        let idsToDelete = markedForDeletion.map { $0.assetId }
-                        try? await photoService.deleteAssets(idsToDelete)
-                        issues.removeAll { $0.userDecision == .delete }
-                        currentIndex = min(currentIndex, issues.count)
-                        deletionResult = (count: count, bytes: bytes)
+                        let idsToDelete = viewModel.markedForDeletion.map { $0.assetId }
+                        do {
+                            try await photoService.deleteAssets(idsToDelete)
+                            viewModel.applyDeletion()
+                        } catch {
+                            viewModel.handleDeletionError(error)
+                            showDeletionError = true
+                        }
                     }
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("This will move \(markedForDeletion.count) photos to Recently Deleted. They can be recovered for 30 days.")
+                Text("This will move \(viewModel.markedForDeletion.count) photos to Recently Deleted. They can be recovered for 30 days.")
             }
-            .fullScreenCover(item: Binding(
-                get: { deletionResult.map { DeletionInfo(count: $0.count, bytes: $0.bytes) } },
-                set: { if $0 == nil { deletionResult = nil } }
-            )) { info in
+            .alert("Deletion Failed", isPresented: $showDeletionError) {
+                Button("OK") {
+                    viewModel.resetState()
+                }
+            } message: {
+                if case .deletionError(let message) = viewModel.state {
+                    Text(message)
+                } else {
+                    Text("An unknown error occurred.")
+                }
+            }
+            .fullScreenCover(item: deletionSuccessBinding) { info in
                 DeletionSuccessView(
                     photosDeleted: info.count,
                     bytesFreed: info.bytes,
                     onDismiss: {
-                        deletionResult = nil
                         dismiss()
                     }
                 )
             }
-            .task(id: currentIndex) {
+            .task(id: viewModel.currentIndex) {
                 await loadCurrentImage()
             }
         }
     }
 
-    private func markForDeletion() {
-        guard currentIndex < issues.count else { return }
-        undoStack.append((currentIndex, issues[currentIndex].userDecision))
-        issues[currentIndex].userDecision = .delete
-        currentIndex += 1
-    }
-
-    private func keepPhoto() {
-        guard currentIndex < issues.count else { return }
-        undoStack.append((currentIndex, issues[currentIndex].userDecision))
-        issues[currentIndex].userDecision = .keep
-        currentIndex += 1
-    }
-
-    private func undoLast() {
-        guard let (index, previousDecision) = undoStack.popLast() else { return }
-        issues[index].userDecision = previousDecision
-        currentIndex = index
+    private var deletionSuccessBinding: Binding<DeletionInfo?> {
+        Binding(
+            get: {
+                if case .deletionSuccess(let count, let bytes) = viewModel.state {
+                    return DeletionInfo(count: count, bytes: bytes)
+                }
+                return nil
+            },
+            set: { newValue in
+                if newValue == nil {
+                    viewModel.resetState()
+                }
+            }
+        )
     }
 
     private func loadCurrentImage() async {
-        guard currentIndex < issues.count else { return }
-        let assetId = issues[currentIndex].assetId
+        guard let issue = viewModel.currentIssue else { return }
         let fetchResult = PHAsset.fetchAssets(
-            withLocalIdentifiers: [assetId],
+            withLocalIdentifiers: [issue.assetId],
             options: nil
         )
         guard let asset = fetchResult.firstObject else { return }

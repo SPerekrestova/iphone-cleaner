@@ -14,6 +14,7 @@
 		1E9C4133C759AD2259A137FB /* PhotoIssue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88CE6481C06E721C1062DB20 /* PhotoIssue.swift */; };
 		26E0DEBED17E111FCB1257D7 /* SwipeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F072B5BC07FEF2BDB400EFC1 /* SwipeCardView.swift */; };
 		27F4CC8430EB4AC6D46B5575 /* PhotoPermissionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B477CC8A6328849ED3EE802 /* PhotoPermissionView.swift */; };
+		3432E7C7B200905006A7243B /* ReviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB0402210A94F5858A05D1D /* ReviewViewModel.swift */; };
 		34FEBA08337DE09654D1A1A7 /* PhotoLibraryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AD6EBD4B32811A3B6CA869E /* PhotoLibraryService.swift */; };
 		4011E23EA7306A62550A93DF /* ImageAnalysisServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3404FAF7FECB29E95BB13883 /* ImageAnalysisServiceTests.swift */; };
 		436D19C4AE8ADD08970BC11B /* PhotoScanEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3104204DCF91186462DCEEF6 /* PhotoScanEngineTests.swift */; };
@@ -23,6 +24,7 @@
 		61FA0EB3FCE4F1F7BE0C7839 /* ScanningView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97FA47F87CD8C4BAB7F62598 /* ScanningView.swift */; };
 		6207485B200EC56A3BCDF958 /* ReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A40BDF27F2AC5F1F9636234B /* ReviewView.swift */; };
 		67EBF98A0B7BE11B3EB41D59 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 919F0D8ACA84FE591D512A91 /* AppState.swift */; };
+		6D261C82BF39FDBAC64BEBBB /* ReviewViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB440E155C3CC22C75FF1E6A /* ReviewViewModelTests.swift */; };
 		71F89605AF29C7836ED0D90E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB8132E5841138D15CDC497 /* ContentView.swift */; };
 		76242C66ECCBE460AA3E6BF2 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24D3C5B5467DD67BD9E601C /* SettingsView.swift */; };
 		7E36C64D01E9FAC35AF4AFE3 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B678E4D47BCC153B77B8CCA6 /* Theme.swift */; };
@@ -61,6 +63,7 @@
 		0D9CC87BE3DDF14E9D6F3359 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		17116A6110B8244CB07C62BD /* CategoryCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryCardView.swift; sourceTree = "<group>"; };
 		175710657AA1FE2E478B6DEF /* iPhoneCleanerUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = iPhoneCleanerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2CB0402210A94F5858A05D1D /* ReviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewViewModel.swift; sourceTree = "<group>"; };
 		3104204DCF91186462DCEEF6 /* PhotoScanEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoScanEngineTests.swift; sourceTree = "<group>"; };
 		3404FAF7FECB29E95BB13883 /* ImageAnalysisServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageAnalysisServiceTests.swift; sourceTree = "<group>"; };
 		3B477CC8A6328849ED3EE802 /* PhotoPermissionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPermissionView.swift; sourceTree = "<group>"; };
@@ -87,6 +90,7 @@
 		D24D3C5B5467DD67BD9E601C /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		E5FD8FC7187ED830E86D12FB /* DeletionSuccessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletionSuccessView.swift; sourceTree = "<group>"; };
 		EB101C1E818D93E22183261D /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		EB440E155C3CC22C75FF1E6A /* ReviewViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewViewModelTests.swift; sourceTree = "<group>"; };
 		EE46CC7B0D7AB1653F56A307 /* iPhoneCleanerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPhoneCleanerApp.swift; sourceTree = "<group>"; };
 		F072B5BC07FEF2BDB400EFC1 /* SwipeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeCardView.swift; sourceTree = "<group>"; };
 		F8A8A19865B67DD679D8AD69 /* SimilarityGroupingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimilarityGroupingTests.swift; sourceTree = "<group>"; };
@@ -102,6 +106,7 @@
 				67C001E621020E1B06462E73 /* Models */,
 				6A7DDEAA8D97D0128313A7F7 /* Services */,
 				B85568C7A8397DFBB147C8CD /* Utilities */,
+				EE22E91DBA73BDCE37A55538 /* ViewModels */,
 				8D258DC5089119166564CCB1 /* Views */,
 			);
 			path = iPhoneCleaner;
@@ -232,8 +237,17 @@
 				3CC399B433DB0FE22A6C10C9 /* Models */,
 				D89A723222E8C1095125BE8A /* Performance */,
 				E963A49501596C88DE9DCD24 /* Services */,
+				C47F4F6C3C878BD2778B4B22 /* ViewModels */,
 			);
 			path = iPhoneCleanerTests;
+			sourceTree = "<group>";
+		};
+		C47F4F6C3C878BD2778B4B22 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				EB440E155C3CC22C75FF1E6A /* ReviewViewModelTests.swift */,
+			);
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 		CAEA050AC5473F7023478815 /* iPhoneCleanerUITests */ = {
@@ -263,6 +277,14 @@
 				4FCC1C69440AAF81CCA177B1 /* VisionAPITests.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		EE22E91DBA73BDCE37A55538 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				2CB0402210A94F5858A05D1D /* ReviewViewModel.swift */,
+			);
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 		F4D01146AE8D2DA322E1AF25 /* Home */ = {
@@ -398,6 +420,7 @@
 				0B5E9B0568CC867871AA24CA /* PhotoIssueTests.swift in Sources */,
 				00FF1B4C6AF420352361A2BF /* PhotoLibraryServiceTests.swift in Sources */,
 				436D19C4AE8ADD08970BC11B /* PhotoScanEngineTests.swift in Sources */,
+				6D261C82BF39FDBAC64BEBBB /* ReviewViewModelTests.swift in Sources */,
 				DF3DA5CD9A362B8C3F18D9FD /* ScanFlowTests.swift in Sources */,
 				588DA692EF5E682792B04D7E /* SimilarityGroupingTests.swift in Sources */,
 				5E78A9FFE8F21ABFB9DCFA4F /* VideoSupportTests.swift in Sources */,
@@ -420,6 +443,7 @@
 				27F4CC8430EB4AC6D46B5575 /* PhotoPermissionView.swift in Sources */,
 				D998376CF0A0B8E2FAC0DC31 /* PhotoScanEngine.swift in Sources */,
 				6207485B200EC56A3BCDF958 /* ReviewView.swift in Sources */,
+				3432E7C7B200905006A7243B /* ReviewViewModel.swift in Sources */,
 				E7059BC7DCF8B20CCF404727 /* ScanResult.swift in Sources */,
 				61FA0EB3FCE4F1F7BE0C7839 /* ScanningView.swift in Sources */,
 				76242C66ECCBE460AA3E6BF2 /* SettingsView.swift in Sources */,
