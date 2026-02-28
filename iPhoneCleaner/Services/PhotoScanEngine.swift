@@ -99,8 +99,10 @@ final class PhotoScanEngine {
                     continue
                 }
 
-                // Blur detection (photos and video keyframes)
-                if let blurScore = try? analysisService.blurScore(for: image),
+                // Blur detection (photos and video keyframes, skip Portrait mode)
+                let isPortrait = asset.mediaSubtypes.contains(.photoDepthEffect)
+                if !isPortrait,
+                   let blurScore = try? analysisService.salientRegionBlurScore(for: image),
                    blurScore < settings.blurThreshold {
                     let issue = PhotoIssue(
                         assetId: assetId, category: .blurry,
@@ -183,7 +185,8 @@ final class PhotoScanEngine {
         }
 
         // Group duplicates + similar (same logic as before)
-        let duplicateGroups = analysisService.groupByFeaturePrint(featurePrints, maxDistance: 5.0)
+        let dupMaxDist = Float((1.0 - Double(settings.duplicateThreshold)) * 100.0)
+        let duplicateGroups = analysisService.groupByFeaturePrint(featurePrints, maxDistance: dupMaxDist)
         for group in duplicateGroups {
             let groupId = UUID().uuidString
             for assetId in group.dropFirst() {
@@ -197,7 +200,8 @@ final class PhotoScanEngine {
         }
 
         let duplicateAssetIds = Set(duplicateGroups.flatMap { $0 })
-        let similarGroups = analysisService.groupByFeaturePrint(featurePrints, maxDistance: 15.0)
+        let simMaxDist = Float((1.0 - Double(settings.similarThreshold)) * 100.0)
+        let similarGroups = analysisService.groupByFeaturePrint(featurePrints, maxDistance: simMaxDist)
         for group in similarGroups {
             let nonDuplicateMembers = group.filter { !duplicateAssetIds.contains($0) }
             if nonDuplicateMembers.count < 2 { continue }
