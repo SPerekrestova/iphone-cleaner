@@ -36,6 +36,7 @@ struct ReviewView: View {
                 Text("\(min(currentIndex + 1, issues.count)) of \(issues.count)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                    .accessibilityIdentifier("reviewProgress")
 
                 // Swipe card
                 if currentIndex < issues.count {
@@ -59,6 +60,7 @@ struct ReviewView: View {
                             .foregroundStyle(.green)
                         Text("All reviewed!")
                             .font(.title2.bold())
+                            .accessibilityIdentifier("allReviewedText")
                         if !markedForDeletion.isEmpty {
                             Text("\(markedForDeletion.count) photos marked for deletion")
                                 .foregroundStyle(.secondary)
@@ -77,6 +79,7 @@ struct ReviewView: View {
                             .font(.title)
                     }
                     .disabled(undoStack.isEmpty)
+                    .accessibilityIdentifier("undoButton")
 
                     // Delete All
                     Button {
@@ -90,6 +93,7 @@ struct ReviewView: View {
                         }
                     }
                     .tint(.red)
+                    .accessibilityIdentifier("deleteAllButton")
 
                     // Skip
                     Button {
@@ -99,6 +103,7 @@ struct ReviewView: View {
                             .font(.title)
                     }
                     .disabled(currentIndex >= issues.count)
+                    .accessibilityIdentifier("skipButton")
                 }
                 .padding()
             }

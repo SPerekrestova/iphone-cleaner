@@ -31,5 +31,8 @@ struct StorageRingView: View {
             }
         }
         .frame(width: 150, height: 150)
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("storageRing")
+        .accessibilityLabel("Storage: \(usedText) of \(totalText)")
     }
 }
