@@ -151,6 +151,18 @@ import CoreGraphics
     #expect(cropped!.height == 100, "Center crop height should be 100, got \(cropped!.height)")
 }
 
+@Test func blurScoreConsistentAcrossMultipleCalls() throws {
+    let service = ImageAnalysisService()
+    let renderer = UIGraphicsImageRenderer(size: CGSize(width: 100, height: 100))
+    let image = renderer.image { ctx in
+        UIColor.red.setFill()
+        ctx.fill(CGRect(x: 0, y: 0, width: 100, height: 100))
+    }
+    let score1 = try service.blurScore(for: image)
+    let score2 = try service.blurScore(for: image)
+    #expect(abs(score1 - score2) < 0.001, "Shared CIContext should produce identical results")
+}
+
 @Test func faceAreaCalculation() throws {
     let service = ImageAnalysisService()
     let renderer = UIGraphicsImageRenderer(size: CGSize(width: 100, height: 100))

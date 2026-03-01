@@ -4,6 +4,7 @@ import Accelerate
 import CoreImage
 
 final class ImageAnalysisService {
+    private let ciContext = CIContext()
 
     // MARK: - Blur Detection
 
@@ -22,8 +23,7 @@ final class ImageAnalysisService {
             0,  1, 0
         ]
 
-        let context = CIContext()
-        guard let outputCGImage = context.createCGImage(grayscale, from: grayscale.extent) else {
+        guard let outputCGImage = ciContext.createCGImage(grayscale, from: grayscale.extent) else {
             return 0.0
         }
 
