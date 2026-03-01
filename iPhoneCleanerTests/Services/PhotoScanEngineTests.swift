@@ -155,6 +155,13 @@ import Vision
     #expect(faceArea > threshold, "Face area 0.15 should exceed skip threshold 0.10")
 }
 
+@Test func scanEngineIsObservable() {
+    let engine = PhotoScanEngine()
+    #expect(engine.isScanning == false)
+    #expect(engine.progress.processed == 0)
+    #expect(engine.progress.total == 0)
+}
+
 @Test func portraitSkipLogic() {
     // PHAssetMediaSubtype.photoDepthEffect has rawValue 8 (1 << 3)
     let portraitSubtype = PHAssetMediaSubtype.photoDepthEffect
