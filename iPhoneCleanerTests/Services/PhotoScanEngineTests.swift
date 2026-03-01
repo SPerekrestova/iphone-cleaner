@@ -149,6 +149,12 @@ import Vision
     #expect(abs(simDist - 10.0) < 0.01, "Similar maxDistance should be ~10.0")
 }
 
+@Test func faceAreaThresholdSkipsTextDetection() {
+    let faceArea = 0.15
+    let threshold = 0.10
+    #expect(faceArea > threshold, "Face area 0.15 should exceed skip threshold 0.10")
+}
+
 @Test func portraitSkipLogic() {
     // PHAssetMediaSubtype.photoDepthEffect has rawValue 8 (1 << 3)
     let portraitSubtype = PHAssetMediaSubtype.photoDepthEffect

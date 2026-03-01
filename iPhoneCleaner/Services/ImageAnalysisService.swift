@@ -340,6 +340,20 @@ final class ImageAnalysisService {
         return request.results?.first?.faceCaptureQuality
     }
 
+    // MARK: - Face Area Detection
+
+    func faceArea(for image: UIImage) throws -> Double {
+        guard let cgImage = image.cgImage else { return 0.0 }
+        let request = VNDetectFaceRectanglesRequest()
+        let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+        try handler.perform([request])
+        let totalArea = (request.results ?? []).reduce(0.0) { sum, face in
+            let box = face.boundingBox
+            return sum + Double(box.width * box.height)
+        }
+        return min(totalArea, 1.0)
+    }
+
     // MARK: - Image Aesthetics (iOS 18+)
 
     func aestheticsScore(for image: UIImage) async -> (score: Float, isUtility: Bool)? {

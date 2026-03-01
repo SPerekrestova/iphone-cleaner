@@ -129,8 +129,10 @@ final class PhotoScanEngine {
                     }
                 }
 
-                // Text coverage
-                if let coverage = try? analysisService.textCoverage(for: image),
+                // Text coverage (skip if significant face area detected)
+                let faceArea = (try? analysisService.faceArea(for: image)) ?? 0.0
+                if faceArea <= 0.10,
+                   let coverage = try? analysisService.textCoverage(for: image),
                    coverage >= settings.textCoverageThreshold {
                     let issue = PhotoIssue(
                         assetId: assetId, category: .textHeavy,
