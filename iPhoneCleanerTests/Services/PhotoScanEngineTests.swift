@@ -18,7 +18,7 @@ import Vision
 @Test func scanSettingsDefaults() {
     let settings = ScanSettings()
     #expect(settings.blurThreshold == 0.3)
-    #expect(settings.duplicateThreshold == 0.95)
+    #expect(settings.duplicateThreshold == 0.98)
     #expect(settings.similarThreshold == 0.80)
     #expect(settings.batchSize == 30)
 }
@@ -63,27 +63,27 @@ import Vision
 // MARK: - Threshold to Distance Conversion
 
 @Test func similarThresholdToDistanceConversion() {
-    // (1 - 0.95) * 100 == 5.0, (1 - 0.80) * 100 == 20.0
-    let tight: Float = 0.95
+    // (1 - 0.98) * 50 == 1.0, (1 - 0.80) * 50 == 10.0
+    let tight: Float = 0.98
     let loose: Float = 0.80
-    let tightDist = Float((1.0 - Double(tight)) * 100.0)
-    let looseDist = Float((1.0 - Double(loose)) * 100.0)
-    #expect(abs(tightDist - 5.0) < 0.01, "Threshold 0.95 should map to distance ~5.0")
-    #expect(abs(looseDist - 20.0) < 0.01, "Threshold 0.80 should map to distance ~20.0")
+    let tightDist = Float((1.0 - Double(tight)) * 50.0)
+    let looseDist = Float((1.0 - Double(loose)) * 50.0)
+    #expect(abs(tightDist - 1.0) < 0.01, "Threshold 0.98 should map to distance ~1.0")
+    #expect(abs(looseDist - 10.0) < 0.01, "Threshold 0.80 should map to distance ~10.0")
 }
 
 @Test func duplicateThresholdToDistanceConversion() {
-    let threshold: Float = 0.95
-    let distance = Float((1.0 - Double(threshold)) * 100.0)
-    #expect(abs(distance - 5.0) < 0.01, "Duplicate threshold 0.95 should map to distance ~5.0")
+    let threshold: Float = 0.98
+    let distance = Float((1.0 - Double(threshold)) * 50.0)
+    #expect(abs(distance - 1.0) < 0.01, "Duplicate threshold 0.98 should map to distance ~1.0")
 }
 
 @Test func defaultThresholdsMatchExpected() {
     let settings = ScanSettings()
-    let dupDist = Float((1.0 - Double(settings.duplicateThreshold)) * 100.0)
-    let simDist = Float((1.0 - Double(settings.similarThreshold)) * 100.0)
-    #expect(abs(dupDist - 5.0) < 0.01, "Default duplicate distance should be ~5.0")
-    #expect(abs(simDist - 20.0) < 0.01, "Default similar distance should be ~20.0")
+    let dupDist = Float((1.0 - Double(settings.duplicateThreshold)) * 50.0)
+    let simDist = Float((1.0 - Double(settings.similarThreshold)) * 50.0)
+    #expect(abs(dupDist - 1.0) < 0.01, "Default duplicate distance should be ~1.0")
+    #expect(abs(simDist - 10.0) < 0.01, "Default similar distance should be ~10.0")
 }
 
 // Note: Neural Engine required — gracefully skips on simulator
@@ -134,6 +134,19 @@ import Vision
     } catch {
         // Saliency request needs Neural Engine — skip on simulator
     }
+}
+
+@Test func duplicateThresholdDefaultIsTighter() {
+    let settings = ScanSettings()
+    #expect(settings.duplicateThreshold == 0.98, "Default duplicate threshold should be 0.98")
+}
+
+@Test func distanceFormulaUsesHalvedMultiplier() {
+    let settings = ScanSettings()
+    let dupDist = Float((1.0 - Double(settings.duplicateThreshold)) * 50.0)
+    let simDist = Float((1.0 - Double(settings.similarThreshold)) * 50.0)
+    #expect(abs(dupDist - 1.0) < 0.01, "Duplicate maxDistance should be ~1.0")
+    #expect(abs(simDist - 10.0) < 0.01, "Similar maxDistance should be ~10.0")
 }
 
 @Test func portraitSkipLogic() {

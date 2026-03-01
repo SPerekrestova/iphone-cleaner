@@ -20,7 +20,7 @@ struct ScanProgress: Sendable {
 
 struct ScanSettings {
     var blurThreshold: Double = 0.3
-    var duplicateThreshold: Float = 0.95
+    var duplicateThreshold: Float = 0.98
     var similarThreshold: Float = 0.80
     var batchSize: Int = 30
     var excludedAlbumIds: Set<String> = []
@@ -185,7 +185,7 @@ final class PhotoScanEngine {
         }
 
         // Group duplicates + similar (same logic as before)
-        let dupMaxDist = Float((1.0 - Double(settings.duplicateThreshold)) * 100.0)
+        let dupMaxDist = Float((1.0 - Double(settings.duplicateThreshold)) * 50.0)
         let duplicateGroups = analysisService.groupByFeaturePrint(featurePrints, maxDistance: dupMaxDist)
         for group in duplicateGroups {
             let groupId = UUID().uuidString
@@ -200,7 +200,7 @@ final class PhotoScanEngine {
         }
 
         let duplicateAssetIds = Set(duplicateGroups.flatMap { $0 })
-        let simMaxDist = Float((1.0 - Double(settings.similarThreshold)) * 100.0)
+        let simMaxDist = Float((1.0 - Double(settings.similarThreshold)) * 50.0)
         let similarGroups = analysisService.groupByFeaturePrint(featurePrints, maxDistance: simMaxDist)
         for group in similarGroups {
             let nonDuplicateMembers = group.filter { !duplicateAssetIds.contains($0) }
