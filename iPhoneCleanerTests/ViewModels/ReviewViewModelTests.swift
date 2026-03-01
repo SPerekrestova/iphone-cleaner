@@ -170,3 +170,17 @@ private func makeVM(count: Int = 3) -> ReviewViewModel {
     // currentIndex clamped to 0, 1 issue remaining → reviewing
     #expect(vm.state == .reviewing)
 }
+
+@Test func deletionSuccessStateContainsCorrectInfo() {
+    let vm = makeVM(count: 3)
+    vm.markForDeletion() // asset-0 → delete (1MB)
+    vm.keepPhoto()       // asset-1 → keep
+    vm.markForDeletion() // asset-2 → delete (1MB)
+    vm.applyDeletion()
+    if case .deletionSuccess(let count, let bytes) = vm.state {
+        #expect(count == 2)
+        #expect(bytes == 2_000_000)
+    } else {
+        #expect(Bool(false), "State should be .deletionSuccess")
+    }
+}
