@@ -43,6 +43,11 @@ final class PhotoScanEngine {
             isScanning = true
             issues = []
         }
+        defer {
+            Task { @MainActor in
+                isScanning = false
+            }
+        }
 
         let assets = photoService.fetchAllMedia()
         await MainActor.run {
