@@ -46,11 +46,12 @@ final class AppState {
     }
 
     func loadStorageInfo() {
-        let attrs = try? FileManager.default.attributesOfFileSystem(
-            forPath: NSHomeDirectory()
-        )
-        storageTotal = (attrs?[.systemSize] as? Int64) ?? 0
-        let freeSpace = (attrs?[.systemFreeSize] as? Int64) ?? 0
-        storageUsed = storageTotal - freeSpace
+        let homeURL = URL(fileURLWithPath: NSHomeDirectory())
+        guard let values = try? homeURL.resourceValues(
+            forKeys: [.volumeTotalCapacityKey, .volumeAvailableCapacityForImportantUsageKey]
+        ) else { return }
+        storageTotal = Int64(values.volumeTotalCapacity ?? 0)
+        let available = Int64(values.volumeAvailableCapacityForImportantUsage ?? 0)
+        storageUsed = storageTotal - available
     }
 }
