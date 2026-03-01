@@ -27,6 +27,7 @@ struct ScanSettings {
     var textCoverageThreshold: Double = 0.15
     var lowQualityThreshold: Float = -0.3
     var lensSmudgeThreshold: Float = 0.7
+    var maxConcurrency: Int = 4
 }
 
 @Observable
