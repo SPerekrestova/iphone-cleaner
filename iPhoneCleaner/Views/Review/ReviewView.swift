@@ -6,8 +6,10 @@ struct ReviewView: View {
     let photoService: PhotoLibraryService
 
     @State private var currentImage: UIImage?
+    @State private var imageCache: [String: UIImage] = [:]
     @State private var showDeleteConfirmation = false
     @State private var showDeletionError = false
+    @State private var deletionInfo: DeletionInfo?
     @Environment(\.dismiss) private var dismiss
     @Environment(AppState.self) private var appState
 
@@ -116,10 +118,13 @@ struct ReviewView: View {
                 Button("Delete \(viewModel.markedForDeletion.count) Photos", role: .destructive) {
                     Task {
                         let idsToDelete = viewModel.markedForDeletion.map { $0.assetId }
+                        let count = viewModel.markedForDeletion.count
+                        let bytes = viewModel.totalFreeable
                         do {
                             try await photoService.deleteAssets(idsToDelete)
                             viewModel.applyDeletion()
                             appState.removeDeletedIssues(Set(idsToDelete))
+                            deletionInfo = DeletionInfo(count: count, bytes: bytes)
                         } catch {
                             viewModel.handleDeletionError(error)
                             showDeletionError = true
@@ -141,7 +146,7 @@ struct ReviewView: View {
                     Text("An unknown error occurred.")
                 }
             }
-            .fullScreenCover(item: deletionSuccessBinding) { info in
+            .fullScreenCover(item: $deletionInfo) { info in
                 DeletionSuccessView(
                     photosDeleted: info.count,
                     bytesFreed: info.bytes,
@@ -156,30 +161,56 @@ struct ReviewView: View {
         }
     }
 
-    private var deletionSuccessBinding: Binding<DeletionInfo?> {
-        Binding(
-            get: {
-                if case .deletionSuccess(let count, let bytes) = viewModel.state {
-                    return DeletionInfo(count: count, bytes: bytes)
-                }
-                return nil
-            },
-            set: { newValue in
-                if newValue == nil {
-                    viewModel.resetState()
-                }
-            }
-        )
-    }
-
     private func loadCurrentImage() async {
         guard let issue = viewModel.currentIssue else { return }
+
+        // Use cache if available
+        if let cached = imageCache[issue.assetId] {
+            currentImage = cached
+        } else {
+            currentImage = nil
+        }
+
+        // Load current image if not cached
+        if imageCache[issue.assetId] == nil {
+            let image = await loadImage(for: issue.assetId)
+            imageCache[issue.assetId] = image
+            if viewModel.currentIssue?.assetId == issue.assetId {
+                currentImage = image
+            }
+        }
+
+        // Prefetch next 2
+        let prefetchStart = viewModel.currentIndex + 1
+        let prefetchEnd = min(viewModel.currentIndex + 2, viewModel.issues.count - 1)
+        if prefetchStart <= prefetchEnd {
+            for i in prefetchStart...prefetchEnd {
+                let nextId = viewModel.issues[i].assetId
+                if imageCache[nextId] == nil {
+                    let image = await loadImage(for: nextId)
+                    imageCache[nextId] = image
+                }
+            }
+        }
+
+        // Evict old entries (keep only current ± 2)
+        let lo = max(viewModel.currentIndex - 2, 0)
+        let hi = min(viewModel.currentIndex + 2, viewModel.issues.count - 1)
+        if lo <= hi {
+            let keepIds = Set((lo...hi).compactMap { i in
+                i < viewModel.issues.count ? viewModel.issues[i].assetId : nil
+            })
+            imageCache = imageCache.filter { keepIds.contains($0.key) }
+        }
+    }
+
+    private func loadImage(for assetId: String) async -> UIImage? {
         let fetchResult = PHAsset.fetchAssets(
-            withLocalIdentifiers: [issue.assetId],
+            withLocalIdentifiers: [assetId],
             options: nil
         )
-        guard let asset = fetchResult.firstObject else { return }
-        currentImage = await photoService.loadImageWithTimeout(
+        guard let asset = fetchResult.firstObject else { return nil }
+        return await photoService.loadImageWithTimeout(
             for: asset,
             targetSize: CGSize(width: 600, height: 600)
         )
