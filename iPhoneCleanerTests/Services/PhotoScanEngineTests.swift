@@ -155,6 +155,11 @@ import Vision
     #expect(faceArea > threshold, "Face area 0.15 should exceed skip threshold 0.10")
 }
 
+@Test func scanSettingsHasMaxConcurrency() {
+    let settings = ScanSettings()
+    #expect(settings.maxConcurrency == 4)
+}
+
 @Test func scanEngineIsObservable() {
     let engine = PhotoScanEngine()
     #expect(engine.isScanning == false)
