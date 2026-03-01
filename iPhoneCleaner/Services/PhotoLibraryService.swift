@@ -151,6 +151,30 @@ final class PhotoLibraryService {
         }
     }
 
+    func extractKeyframe(from asset: PHAsset) async -> CGImage? {
+        guard asset.mediaType == .video else { return nil }
+
+        return await withCheckedContinuation { continuation in
+            let options = PHVideoRequestOptions()
+            options.isNetworkAccessAllowed = true
+
+            PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { avAsset, _, _ in
+                guard let avAsset else {
+                    continuation.resume(returning: nil)
+                    return
+                }
+
+                let generator = AVAssetImageGenerator(asset: avAsset)
+                generator.appliesPreferredTrackTransform = true
+                // Default tolerances — snap to nearest keyframe (much faster than .zero)
+
+                let time = CMTime(seconds: 1.0, preferredTimescale: 600)
+                let image = try? generator.copyCGImage(at: time, actualTime: nil)
+                continuation.resume(returning: image)
+            }
+        }
+    }
+
     func extractKeyframes(from asset: PHAsset, count: Int = 8) async -> [CGImage] {
         guard asset.mediaType == .video else { return [] }
 

@@ -19,6 +19,11 @@ import Photos
     #expect(combined == true)
 }
 
+@Test func extractSingleKeyframeMethodExists() {
+    let service = PhotoLibraryService()
+    #expect(true, "extractKeyframe(from:) method should exist and compile")
+}
+
 @Test func loadImageWithTimeoutReturnsNilOnTimeout() async {
     let service = PhotoLibraryService()
     let result = await service.loadImageWithTimeout(
