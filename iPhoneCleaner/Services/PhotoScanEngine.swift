@@ -39,12 +39,17 @@ final class PhotoScanEngine {
     var issues: [PhotoIssue] = []
 
     func scan(settings: ScanSettings = ScanSettings()) async throws -> [PhotoIssue] {
-        isScanning = true
-        issues = []
-        defer { isScanning = false }
+        await MainActor.run {
+            isScanning = true
+            issues = []
+        }
 
         let assets = photoService.fetchAllMedia()
-        progress = ScanProgress(processed: 0, total: assets.count)
+        await MainActor.run {
+            progress = ScanProgress(processed: 0, total: assets.count)
+        }
+
+        var localIssues: [PhotoIssue] = []
 
         var featurePrints: [(id: String, print: VNFeaturePrintObservation)] = []
         var categoryCounts: [IssueCategory: Int] = [:]
@@ -64,7 +69,7 @@ final class PhotoScanEngine {
                         assetId: assetId, category: .screenRecording,
                         confidence: 1.0, fileSize: fileSize, isVideo: true
                     )
-                    issues.append(issue)
+                    localIssues.append(issue)
                     categoryCounts[.screenRecording, default: 0] += 1
                 }
 
@@ -91,11 +96,13 @@ final class PhotoScanEngine {
                 }
 
                 guard let image else {
-                    progress = ScanProgress(
-                        processed: batchStart + index + 1,
-                        total: assets.count,
-                        categoryCounts: categoryCounts
-                    )
+                    await MainActor.run {
+                        progress = ScanProgress(
+                            processed: batchStart + index + 1,
+                            total: assets.count,
+                            categoryCounts: categoryCounts
+                        )
+                    }
                     continue
                 }
 
@@ -108,7 +115,7 @@ final class PhotoScanEngine {
                         assetId: assetId, category: .blurry,
                         confidence: 1.0 - blurScore, fileSize: fileSize, isVideo: isVideo
                     )
-                    issues.append(issue)
+                    localIssues.append(issue)
                     categoryCounts[.blurry, default: 0] += 1
                 }
 
@@ -124,7 +131,7 @@ final class PhotoScanEngine {
                             assetId: assetId, category: .screenshot,
                             confidence: isScreenshot ? 1.0 : 0.9, fileSize: fileSize
                         )
-                        issues.append(issue)
+                        localIssues.append(issue)
                         categoryCounts[.screenshot, default: 0] += 1
                     }
                 }
@@ -138,7 +145,7 @@ final class PhotoScanEngine {
                         assetId: assetId, category: .textHeavy,
                         confidence: min(coverage * 2, 1.0), fileSize: fileSize, isVideo: isVideo
                     )
-                    issues.append(issue)
+                    localIssues.append(issue)
                     categoryCounts[.textHeavy, default: 0] += 1
                 }
 
@@ -154,7 +161,7 @@ final class PhotoScanEngine {
                             fileSize: fileSize, sceneTags: sceneTags,
                             aestheticsScore: aesthetics.score, isVideo: isVideo
                         )
-                        issues.append(issue)
+                        localIssues.append(issue)
                         categoryCounts[.lowQuality, default: 0] += 1
                     }
                 }
@@ -167,7 +174,7 @@ final class PhotoScanEngine {
                         confidence: Double(smudge), fileSize: fileSize,
                         sceneTags: sceneTags, isVideo: isVideo
                     )
-                    issues.append(issue)
+                    localIssues.append(issue)
                     categoryCounts[.lensSmudge, default: 0] += 1
                 }
 
@@ -178,11 +185,13 @@ final class PhotoScanEngine {
                     }
                 }
 
-                progress = ScanProgress(
-                    processed: batchStart + index + 1,
-                    total: assets.count,
-                    categoryCounts: categoryCounts
-                )
+                await MainActor.run {
+                    progress = ScanProgress(
+                        processed: batchStart + index + 1,
+                        total: assets.count,
+                        categoryCounts: categoryCounts
+                    )
+                }
             }
         }
 
@@ -196,7 +205,7 @@ final class PhotoScanEngine {
                     assetId: assetId, category: .duplicate,
                     confidence: 0.95, fileSize: 0, groupId: groupId
                 )
-                issues.append(issue)
+                localIssues.append(issue)
                 categoryCounts[.duplicate, default: 0] += 1
             }
         }
@@ -213,18 +222,22 @@ final class PhotoScanEngine {
                     assetId: assetId, category: .similar,
                     confidence: 0.85, fileSize: 0, groupId: groupId
                 )
-                issues.append(issue)
+                localIssues.append(issue)
                 categoryCounts[.similar, default: 0] += 1
             }
         }
 
-        progress = ScanProgress(
-            processed: assets.count,
-            total: assets.count,
-            categoryCounts: categoryCounts
-        )
+        await MainActor.run {
+            progress = ScanProgress(
+                processed: assets.count,
+                total: assets.count,
+                categoryCounts: categoryCounts
+            )
+            issues = localIssues
+            isScanning = false
+        }
 
-        return issues
+        return localIssues
     }
 
     func deleteMarkedPhotos() async throws -> Int64 {
