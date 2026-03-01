@@ -38,6 +38,32 @@ import Foundation
     #expect(state.storageUsed < state.storageTotal, "Used storage should be less than total")
 }
 
+@Test func removeDeletedIssuesUpdatesCounts() {
+    let state = AppState()
+    let result = ScanResult(
+        totalPhotosScanned: 10,
+        duplicatesFound: 3,
+        blurryFound: 2
+    )
+    let issues = [
+        PhotoIssue(assetId: "dup-1", category: .duplicate, confidence: 0.95, fileSize: 1000),
+        PhotoIssue(assetId: "dup-2", category: .duplicate, confidence: 0.95, fileSize: 2000),
+        PhotoIssue(assetId: "dup-3", category: .duplicate, confidence: 0.95, fileSize: 3000),
+        PhotoIssue(assetId: "blur-1", category: .blurry, confidence: 0.8, fileSize: 4000),
+        PhotoIssue(assetId: "blur-2", category: .blurry, confidence: 0.7, fileSize: 5000),
+    ]
+    state.lastScanResult = result
+    state.lastScanIssues = issues
+
+    let deletedIds: Set<String> = ["dup-1", "dup-2"]
+    state.removeDeletedIssues(deletedIds)
+
+    #expect(state.lastScanIssues.count == 3)
+    #expect(state.lastScanResult?.duplicatesFound == 1)
+    #expect(state.lastScanResult?.blurryFound == 2)
+    #expect(state.lastScanResult?.totalSizeReclaimable == 12000)
+}
+
 @Test func scanResultRelationshipToIssues() {
     let result = ScanResult(totalPhotosScanned: 100, blurryFound: 5)
     let issue = PhotoIssue(assetId: "test", category: .blurry, confidence: 0.9, fileSize: 500_000)

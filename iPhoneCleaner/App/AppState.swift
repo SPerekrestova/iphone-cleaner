@@ -45,6 +45,20 @@ final class AppState {
         }
     }
 
+    func removeDeletedIssues(_ deletedAssetIds: Set<String>) {
+        lastScanIssues.removeAll { deletedAssetIds.contains($0.assetId) }
+        guard let result = lastScanResult else { return }
+        result.duplicatesFound = lastScanIssues.filter { $0.category == .duplicate }.count
+        result.similarFound = lastScanIssues.filter { $0.category == .similar }.count
+        result.blurryFound = lastScanIssues.filter { $0.category == .blurry }.count
+        result.screenshotsFound = lastScanIssues.filter { $0.category == .screenshot }.count
+        result.screenRecordingsFound = lastScanIssues.filter { $0.category == .screenRecording }.count
+        result.lensSmudgeFound = lastScanIssues.filter { $0.category == .lensSmudge }.count
+        result.textHeavyFound = lastScanIssues.filter { $0.category == .textHeavy }.count
+        result.lowQualityFound = lastScanIssues.filter { $0.category == .lowQuality }.count
+        result.totalSizeReclaimable = lastScanIssues.reduce(0) { $0 + $1.fileSize }
+    }
+
     func loadStorageInfo() {
         let homeURL = URL(fileURLWithPath: NSHomeDirectory())
         guard let values = try? homeURL.resourceValues(

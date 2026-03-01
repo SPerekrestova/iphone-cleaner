@@ -9,6 +9,7 @@ struct ReviewView: View {
     @State private var showDeleteConfirmation = false
     @State private var showDeletionError = false
     @Environment(\.dismiss) private var dismiss
+    @Environment(AppState.self) private var appState
 
     init(issues: [PhotoIssue], category: IssueCategory, photoService: PhotoLibraryService) {
         self._viewModel = State(initialValue: ReviewViewModel(issues: issues, category: category))
@@ -118,6 +119,7 @@ struct ReviewView: View {
                         do {
                             try await photoService.deleteAssets(idsToDelete)
                             viewModel.applyDeletion()
+                            appState.removeDeletedIssues(Set(idsToDelete))
                         } catch {
                             viewModel.handleDeletionError(error)
                             showDeletionError = true
