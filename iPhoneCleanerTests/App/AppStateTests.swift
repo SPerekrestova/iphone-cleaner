@@ -30,6 +30,14 @@ import Foundation
     #expect(state.storageUsed > 0)
 }
 
+@Test func storageUsedIsLessThanTotal() {
+    let state = AppState()
+    state.loadStorageInfo()
+    #expect(state.storageUsed > 0)
+    #expect(state.storageTotal > 0)
+    #expect(state.storageUsed < state.storageTotal, "Used storage should be less than total")
+}
+
 @Test func scanResultRelationshipToIssues() {
     let result = ScanResult(totalPhotosScanned: 100, blurryFound: 5)
     let issue = PhotoIssue(assetId: "test", category: .blurry, confidence: 0.9, fileSize: 500_000)
