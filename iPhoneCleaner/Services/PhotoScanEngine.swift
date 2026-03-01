@@ -96,11 +96,12 @@ final class PhotoScanEngine {
                 }
 
                 guard let image else {
+                    let snapshot = categoryCounts
                     await MainActor.run {
                         progress = ScanProgress(
                             processed: batchStart + index + 1,
                             total: assets.count,
-                            categoryCounts: categoryCounts
+                            categoryCounts: snapshot
                         )
                     }
                     continue
@@ -185,11 +186,12 @@ final class PhotoScanEngine {
                     }
                 }
 
+                let countsSnapshot = categoryCounts
                 await MainActor.run {
                     progress = ScanProgress(
                         processed: batchStart + index + 1,
                         total: assets.count,
-                        categoryCounts: categoryCounts
+                        categoryCounts: countsSnapshot
                     )
                 }
             }
@@ -227,13 +229,15 @@ final class PhotoScanEngine {
             }
         }
 
+        let finalCounts = categoryCounts
+        let finalIssues = localIssues
         await MainActor.run {
             progress = ScanProgress(
                 processed: assets.count,
                 total: assets.count,
-                categoryCounts: categoryCounts
+                categoryCounts: finalCounts
             )
-            issues = localIssues
+            issues = finalIssues
             isScanning = false
         }
 
