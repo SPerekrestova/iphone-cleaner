@@ -3,6 +3,13 @@ import Vision
 import Accelerate
 import CoreImage
 
+struct BatchedAnalysisResult {
+    let blurScore: Double
+    let faceArea: Double
+    let textCoverage: Double
+    let featurePrint: VNFeaturePrintObservation?
+}
+
 final class ImageAnalysisService {
     private let ciContext = CIContext()
 
@@ -384,5 +391,54 @@ final class ImageAnalysisService {
         } catch {
             return nil
         }
+    }
+
+    // MARK: - Batched Analysis (single image decode)
+
+    func batchedAnalysis(for image: UIImage) throws -> BatchedAnalysisResult {
+        guard let cgImage = image.cgImage else {
+            return BatchedAnalysisResult(blurScore: 0, faceArea: 0, textCoverage: 0, featurePrint: nil)
+        }
+
+        let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+
+        let saliencyReq = VNGenerateAttentionBasedSaliencyImageRequest()
+        let faceReq = VNDetectFaceRectanglesRequest()
+        let textReq = VNRecognizeTextRequest()
+        textReq.recognitionLevel = .fast
+        let featurePrintReq = VNGenerateImageFeaturePrintRequest()
+
+        try handler.perform([saliencyReq, faceReq, textReq, featurePrintReq])
+
+        // Blur: use salient region if available, else full image
+        let blurScore: Double
+        if let observation = saliencyReq.results?.first,
+           let salientObject = observation.salientObjects?.first,
+           let cropped = croppedToSalientRegion(cgImage, boundingBox: salientObject.boundingBox) {
+            blurScore = try self.blurScore(for: UIImage(cgImage: cropped))
+        } else {
+            blurScore = try self.blurScore(for: image)
+        }
+
+        // Face area
+        let faceArea = (faceReq.results ?? []).reduce(0.0) { sum, face in
+            let box = face.boundingBox
+            return sum + Double(box.width * box.height)
+        }
+
+        // Text coverage
+        let textCoverage = min((textReq.results ?? []).reduce(0.0) { sum, obs in
+            let box = obs.boundingBox
+            return sum + Double(box.width * box.height)
+        }, 1.0)
+
+        let featurePrint = featurePrintReq.results?.first
+
+        return BatchedAnalysisResult(
+            blurScore: blurScore,
+            faceArea: min(faceArea, 1.0),
+            textCoverage: textCoverage,
+            featurePrint: featurePrint
+        )
     }
 }

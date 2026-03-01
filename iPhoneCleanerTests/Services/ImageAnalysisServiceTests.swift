@@ -181,3 +181,28 @@ import CoreGraphics
     let score = try service.salientRegionBlurScore(for: emptyImage)
     #expect(score == 0.0, "Should return 0.0 for image with no CGImage backing")
 }
+
+@Test func batchedAnalysisReturnsAllResults() throws {
+    let service = ImageAnalysisService()
+    let renderer = UIGraphicsImageRenderer(size: CGSize(width: 100, height: 100))
+    let image = renderer.image { ctx in
+        UIColor.white.setFill()
+        ctx.fill(CGRect(x: 0, y: 0, width: 100, height: 100))
+        UIColor.black.setFill()
+        ctx.fill(CGRect(x: 10, y: 10, width: 30, height: 30))
+    }
+    let result = try service.batchedAnalysis(for: image)
+    #expect(result.blurScore >= 0.0 && result.blurScore <= 1.0)
+    #expect(result.faceArea >= 0.0)
+    #expect(result.textCoverage >= 0.0)
+}
+
+@Test func batchedAnalysisHandlesNilCGImage() throws {
+    let service = ImageAnalysisService()
+    let emptyImage = UIImage()
+    let result = try service.batchedAnalysis(for: emptyImage)
+    #expect(result.blurScore == 0.0)
+    #expect(result.faceArea == 0.0)
+    #expect(result.textCoverage == 0.0)
+    #expect(result.featurePrint == nil)
+}
