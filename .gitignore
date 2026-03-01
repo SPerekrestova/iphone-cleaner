@@ -1,6 +1,6 @@
 
 # Xcode
-*.xcworkspace/xcuserdata/
+xcuserdata/
 DerivedData/
 build/
 *.ipa
@@ -11,6 +11,7 @@ build/
 
 # Swift Package Manager
 .build/
+.swiftpm/
 Packages/
 
 # OS
