@@ -263,6 +263,91 @@ final class ImageAnalysisService {
         return groups
     }
 
+    // MARK: - Feature Print Float Extraction
+
+    func extractFloats(from featurePrint: VNFeaturePrintObservation) -> [Float] {
+        let data = featurePrint.data
+        let count = data.count / MemoryLayout<Float>.size
+        guard count > 0 else { return [] }
+        return data.withUnsafeBytes { buffer in
+            Array(buffer.bindMemory(to: Float.self).prefix(count))
+        }
+    }
+
+    // MARK: - LSH-Bucketed Feature Print Grouping
+
+    func groupByFeaturePrintBucketed(
+        _ prints: [(id: String, print: VNFeaturePrintObservation)],
+        maxDistance: Float
+    ) -> [[String]] {
+        guard prints.count > 1 else { return [] }
+
+        // For small sets, brute force is fine
+        if prints.count < 200 {
+            return groupByFeaturePrint(prints, maxDistance: maxDistance)
+        }
+
+        // Extract float vectors for LSH hashing
+        let floatVectors = prints.map { extractFloats(from: $0.print) }
+        guard let dim = floatVectors.first?.count, dim > 0 else {
+            return groupByFeaturePrint(prints, maxDistance: maxDistance)
+        }
+
+        // Generate random projection vectors
+        let numProjections = min(8, dim)
+        var projections: [[Float]] = []
+        for _ in 0..<numProjections {
+            let proj = (0..<dim).map { _ in Float.random(in: -1...1) }
+            let norm = sqrt(proj.reduce(0) { $0 + $1 * $1 })
+            projections.append(norm > 0 ? proj.map { $0 / norm } : proj)
+        }
+
+        // Hash each item
+        func hashKey(_ embedding: [Float]) -> Int {
+            var key = 0
+            for (i, proj) in projections.enumerated() {
+                var dot: Float = 0
+                vDSP_dotpr(embedding, 1, proj, 1, &dot, vDSP_Length(min(embedding.count, proj.count)))
+                if dot >= 0 { key |= (1 << i) }
+            }
+            return key
+        }
+
+        // Build buckets
+        var buckets: [Int: [Int]] = [:]
+        for (i, vec) in floatVectors.enumerated() {
+            let key = hashKey(vec)
+            buckets[key, default: []].append(i)
+        }
+
+        // Compare within each bucket using exact computeDistance
+        var visited = Set<Int>()
+        var groups: [[String]] = []
+
+        for (_, indices) in buckets {
+            for i in indices {
+                if visited.contains(i) { continue }
+                var group = [prints[i].id]
+                visited.insert(i)
+
+                for j in indices {
+                    if visited.contains(j) || i == j { continue }
+                    do {
+                        let dist = try featurePrintDistance(prints[i].print, prints[j].print)
+                        if dist <= maxDistance {
+                            group.append(prints[j].id)
+                            visited.insert(j)
+                        }
+                    } catch { continue }
+                }
+
+                if group.count > 1 { groups.append(group) }
+            }
+        }
+
+        return groups
+    }
+
     // MARK: - Saliency-Weighted Blur Detection
 
     /// Crops a CGImage to the given Vision normalized bounding box (origin bottom-left, 0-1).
