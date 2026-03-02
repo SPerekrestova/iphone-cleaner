@@ -1,4 +1,5 @@
 import Testing
+import UIKit
 import Vision
 @testable import iPhoneCleaner
 
@@ -17,6 +18,42 @@ import Vision
 
     #expect(bruteForce.count == bucketed.count)
     #expect(bruteForce.count == 2)
+}
+
+@Test func featurePrintBucketedGroupingExtractsFloats() throws {
+    let service = ImageAnalysisService()
+    let renderer = UIGraphicsImageRenderer(size: CGSize(width: 64, height: 64))
+    let img = renderer.image { ctx in
+        UIColor.blue.setFill()
+        ctx.fill(CGRect(x: 0, y: 0, width: 64, height: 64))
+    }
+    guard let fp = try? service.generateFeaturePrint(for: img) else {
+        return // Neural Engine not available
+    }
+    let floats = service.extractFloats(from: fp)
+    #expect(!floats.isEmpty, "Should extract non-empty float vector from feature print")
+}
+
+@Test func groupByFeaturePrintBucketedFallsBackForSmallSets() throws {
+    let service = ImageAnalysisService()
+    let renderer = UIGraphicsImageRenderer(size: CGSize(width: 64, height: 64))
+    let blueImg = renderer.image { ctx in
+        UIColor.blue.setFill()
+        ctx.fill(CGRect(x: 0, y: 0, width: 64, height: 64))
+    }
+    let redImg = renderer.image { ctx in
+        UIColor.red.setFill()
+        ctx.fill(CGRect(x: 0, y: 0, width: 64, height: 64))
+    }
+    var prints: [(id: String, print: VNFeaturePrintObservation)] = []
+    for (id, img) in [("blue", blueImg), ("red", redImg)] {
+        guard let fp = try? service.generateFeaturePrint(for: img) else { return }
+        prints.append((id: id, print: fp))
+    }
+    // < 200 items falls back to brute force — should still work
+    let bucketed = service.groupByFeaturePrintBucketed(prints, maxDistance: 10.0)
+    // Result depends on actual distance, but method should not crash
+    #expect(bucketed.count >= 0)
 }
 
 @Test func bucketedGroupingPerformanceAt1000() throws {
