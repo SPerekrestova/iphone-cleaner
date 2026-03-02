@@ -33,7 +33,6 @@ struct ScanSettings {
 @Observable
 final class PhotoScanEngine {
     private let photoService = PhotoLibraryService()
-    private let analysisService = ImageAnalysisService()
 
     var isScanning = false
     var progress = ScanProgress(processed: 0, total: 0)
@@ -51,203 +50,244 @@ final class PhotoScanEngine {
         }
 
         let assets = photoService.fetchAllMedia()
+        let total = assets.count
         await MainActor.run {
-            progress = ScanProgress(processed: 0, total: assets.count)
+            progress = ScanProgress(processed: 0, total: total)
         }
 
-        var localIssues: [PhotoIssue] = []
+        let accumulator = ScanAccumulator()
 
-        var featurePrints: [(id: String, print: VNFeaturePrintObservation)] = []
-        var categoryCounts: [IssueCategory: Int] = [:]
-
-        for batchStart in stride(from: 0, to: assets.count, by: settings.batchSize) {
-            let batchEnd = min(batchStart + settings.batchSize, assets.count)
-            let batch = Array(assets[batchStart..<batchEnd])
-
-            for (index, asset) in batch.enumerated() {
-                let assetId = asset.localIdentifier
-                let fileSize = photoService.getAssetFileSize(asset)
-                let isVideo = asset.mediaType == .video
-
-                // Video: screen recording check
-                if isVideo && PhotoLibraryService.isScreenRecording(subtypeRawValue: asset.mediaSubtypes.rawValue) {
-                    let issue = PhotoIssue(
-                        assetId: assetId, category: .screenRecording,
-                        confidence: 1.0, fileSize: fileSize, isVideo: true
-                    )
-                    localIssues.append(issue)
-                    categoryCounts[.screenRecording, default: 0] += 1
-                }
-
-                // Load image (or keyframe for video)
-                let image: UIImage?
-                if isVideo {
-                    let keyframes = await photoService.extractKeyframes(from: asset, count: 5)
-                    if let first = keyframes.first {
-                        image = UIImage(cgImage: first)
-                    } else {
-                        image = nil
-                    }
-                    // Generate feature print from first keyframe for duplicate detection
-                    for frame in keyframes {
-                        if let fp = try? analysisService.generateFeaturePrint(for: UIImage(cgImage: frame)) {
-                            featurePrints.append((id: assetId, print: fp))
-                            break
-                        }
-                    }
-                } else {
-                    image = await photoService.loadImageWithTimeout(
-                        for: asset, targetSize: CGSize(width: 512, height: 512)
-                    )
-                }
-
-                guard let image else {
-                    let snapshot = categoryCounts
-                    await MainActor.run {
-                        progress = ScanProgress(
-                            processed: batchStart + index + 1,
-                            total: assets.count,
-                            categoryCounts: snapshot
-                        )
-                    }
-                    continue
-                }
-
-                // Blur detection (photos and video keyframes, skip Portrait mode)
-                let isPortrait = asset.mediaSubtypes.contains(.photoDepthEffect)
-                if !isPortrait,
-                   let blurScore = try? analysisService.salientRegionBlurScore(for: image),
-                   blurScore < settings.blurThreshold {
-                    let issue = PhotoIssue(
-                        assetId: assetId, category: .blurry,
-                        confidence: 1.0 - blurScore, fileSize: fileSize, isVideo: isVideo
-                    )
-                    localIssues.append(issue)
-                    categoryCounts[.blurry, default: 0] += 1
-                }
-
-                // Screenshot detection (photos only)
-                if !isVideo {
-                    let isScreenshot = asset.mediaSubtypes.contains(.photoScreenshot)
-                    if isScreenshot || analysisService.isScreenshotByHeuristic(
-                        pixelWidth: asset.pixelWidth,
-                        pixelHeight: asset.pixelHeight,
-                        hasCameraMetadata: false
-                    ) {
-                        let issue = PhotoIssue(
-                            assetId: assetId, category: .screenshot,
-                            confidence: isScreenshot ? 1.0 : 0.9, fileSize: fileSize
-                        )
-                        localIssues.append(issue)
-                        categoryCounts[.screenshot, default: 0] += 1
-                    }
-                }
-
-                // Text coverage (skip if significant face area detected)
-                let faceArea = (try? analysisService.faceArea(for: image)) ?? 0.0
-                if faceArea <= 0.10,
-                   let coverage = try? analysisService.textCoverage(for: image),
-                   coverage >= settings.textCoverageThreshold {
-                    let issue = PhotoIssue(
-                        assetId: assetId, category: .textHeavy,
-                        confidence: min(coverage * 2, 1.0), fileSize: fileSize, isVideo: isVideo
-                    )
-                    localIssues.append(issue)
-                    categoryCounts[.textHeavy, default: 0] += 1
-                }
-
-                // Scene classification (store tags, not an issue category)
-                let sceneTags = (try? analysisService.classifyScene(for: image, topK: 3))?.map { $0.label } ?? []
-
-                // Aesthetics score (iOS 18+)
-                if let aesthetics = await analysisService.aestheticsScore(for: image) {
-                    if aesthetics.score < settings.lowQualityThreshold {
-                        let issue = PhotoIssue(
-                            assetId: assetId, category: .lowQuality,
-                            confidence: Double(1.0 - (aesthetics.score + 1.0) / 2.0),
-                            fileSize: fileSize, sceneTags: sceneTags,
-                            aestheticsScore: aesthetics.score, isVideo: isVideo
-                        )
-                        localIssues.append(issue)
-                        categoryCounts[.lowQuality, default: 0] += 1
-                    }
-                }
-
-                // Lens smudge (iOS 26+)
-                if let smudge = await analysisService.lensSmudgeConfidence(for: image),
-                   smudge >= settings.lensSmudgeThreshold {
-                    let issue = PhotoIssue(
-                        assetId: assetId, category: .lensSmudge,
-                        confidence: Double(smudge), fileSize: fileSize,
-                        sceneTags: sceneTags, isVideo: isVideo
-                    )
-                    localIssues.append(issue)
-                    categoryCounts[.lensSmudge, default: 0] += 1
-                }
-
-                // Feature print for photos (videos handled above)
-                if !isVideo {
-                    if let fp = try? analysisService.generateFeaturePrint(for: image) {
-                        featurePrints.append((id: assetId, print: fp))
-                    }
-                }
-
-                let countsSnapshot = categoryCounts
+        // Progress polling task — 10fps instead of per-asset MainActor hops
+        let progressTask = Task {
+            while !Task.isCancelled {
+                let (processed, counts) = await accumulator.snapshot()
                 await MainActor.run {
-                    progress = ScanProgress(
-                        processed: batchStart + index + 1,
-                        total: assets.count,
-                        categoryCounts: countsSnapshot
+                    progress = ScanProgress(processed: processed, total: total, categoryCounts: counts)
+                }
+                try? await Task.sleep(for: .milliseconds(100))
+            }
+        }
+
+        // Parallel asset processing with concurrency limiter
+        await withTaskGroup(of: Void.self) { group in
+            for (i, asset) in assets.enumerated() {
+                if i >= settings.maxConcurrency {
+                    await group.next()
+                }
+
+                group.addTask {
+                    let result = await Self.processAsset(
+                        asset, settings: settings
                     )
+                    await accumulator.addResult(result)
                 }
             }
         }
 
-        // Group duplicates + similar (same logic as before)
+        progressTask.cancel()
+
+        // Finalize — convert IssueData to PhotoIssue
+        let (issueDataList, featurePrints) = await accumulator.finalize()
+        var allIssues = issueDataList.map { data in
+            PhotoIssue(
+                assetId: data.assetId,
+                category: data.category,
+                confidence: data.confidence,
+                fileSize: data.fileSize,
+                userDecision: data.userDecision,
+                groupId: data.groupId,
+                sceneTags: data.sceneTags,
+                aestheticsScore: data.aestheticsScore,
+                isVideo: data.isVideo
+            )
+        }
+
+        // Single-pass grouping at looser threshold, then partition into dup vs similar
         let dupMaxDist = Float((1.0 - Double(settings.duplicateThreshold)) * 50.0)
-        let duplicateGroups = analysisService.groupByFeaturePrint(featurePrints, maxDistance: dupMaxDist)
-        for group in duplicateGroups {
-            let groupId = UUID().uuidString
-            for assetId in group.dropFirst() {
-                let issue = PhotoIssue(
-                    assetId: assetId, category: .duplicate,
-                    confidence: 0.95, fileSize: 0, groupId: groupId
-                )
-                localIssues.append(issue)
-                categoryCounts[.duplicate, default: 0] += 1
+        let simMaxDist = Float((1.0 - Double(settings.similarThreshold)) * 50.0)
+
+        let groupingService = ImageAnalysisService()
+        let allGroups = groupingService.groupByFeaturePrintBucketed(featurePrints, maxDistance: simMaxDist)
+
+        var categoryCounts = await accumulator.snapshot().1
+        var duplicateAssetIds = Set<String>()
+
+        // First pass: extract duplicates (tight distance)
+        for group in allGroups {
+            var dupGroup: [String] = []
+            let anchor = featurePrints.first { $0.id == group[0] }
+            for memberId in group {
+                if memberId == group[0] { dupGroup.append(memberId); continue }
+                guard let memberFP = featurePrints.first(where: { $0.id == memberId }),
+                      let anchorFP = anchor else { continue }
+                let dist = (try? groupingService.featurePrintDistance(anchorFP.print, memberFP.print)) ?? Float.infinity
+                if dist <= dupMaxDist {
+                    dupGroup.append(memberId)
+                }
+            }
+
+            if dupGroup.count > 1 {
+                let groupId = UUID().uuidString
+                for assetId in dupGroup.dropFirst() {
+                    allIssues.append(PhotoIssue(
+                        assetId: assetId, category: .duplicate,
+                        confidence: 0.95, fileSize: 0, groupId: groupId
+                    ))
+                    categoryCounts[.duplicate, default: 0] += 1
+                    duplicateAssetIds.insert(assetId)
+                }
+                duplicateAssetIds.insert(dupGroup[0])
             }
         }
 
-        let duplicateAssetIds = Set(duplicateGroups.flatMap { $0 })
-        let simMaxDist = Float((1.0 - Double(settings.similarThreshold)) * 50.0)
-        let similarGroups = analysisService.groupByFeaturePrint(featurePrints, maxDistance: simMaxDist)
-        for group in similarGroups {
-            let nonDuplicateMembers = group.filter { !duplicateAssetIds.contains($0) }
-            if nonDuplicateMembers.count < 2 { continue }
+        // Second pass: remaining similar groups (exclude duplicates)
+        for group in allGroups {
+            let nonDupMembers = group.filter { !duplicateAssetIds.contains($0) }
+            if nonDupMembers.count < 2 { continue }
             let groupId = UUID().uuidString
-            for assetId in nonDuplicateMembers.dropFirst() {
-                let issue = PhotoIssue(
+            for assetId in nonDupMembers.dropFirst() {
+                allIssues.append(PhotoIssue(
                     assetId: assetId, category: .similar,
                     confidence: 0.85, fileSize: 0, groupId: groupId
-                )
-                localIssues.append(issue)
+                ))
                 categoryCounts[.similar, default: 0] += 1
             }
         }
 
         let finalCounts = categoryCounts
-        let finalIssues = localIssues
+        let finalIssues = allIssues
         await MainActor.run {
-            progress = ScanProgress(
-                processed: assets.count,
-                total: assets.count,
-                categoryCounts: finalCounts
-            )
+            progress = ScanProgress(processed: total, total: total, categoryCounts: finalCounts)
             issues = finalIssues
             isScanning = false
         }
 
-        return localIssues
+        return allIssues
+    }
+
+    private static func processAsset(
+        _ asset: PHAsset,
+        settings: ScanSettings
+    ) async -> AssetScanResult {
+        let photoService = PhotoLibraryService()
+        let analysisService = ImageAnalysisService()
+
+        let assetId = asset.localIdentifier
+        let fileSize = photoService.getAssetFileSize(asset)
+        let isVideo = asset.mediaType == .video
+        var issues: [AssetScanResult.IssueData] = []
+        var featurePrint: (id: String, print: VNFeaturePrintObservation)?
+
+        // Screen recording check (videos only)
+        if isVideo && PhotoLibraryService.isScreenRecording(subtypeRawValue: asset.mediaSubtypes.rawValue) {
+            issues.append(AssetScanResult.IssueData(
+                assetId: assetId, category: .screenRecording,
+                confidence: 1.0, fileSize: fileSize,
+                userDecision: .pending, groupId: nil,
+                sceneTags: nil, aestheticsScore: nil, isVideo: true
+            ))
+        }
+
+        // Load image (or single keyframe for video)
+        let image: UIImage?
+        if isVideo {
+            if let cgImage = await photoService.extractKeyframe(from: asset) {
+                image = UIImage(cgImage: cgImage)
+                // Feature print from keyframe
+                if let fp = try? analysisService.generateFeaturePrint(for: UIImage(cgImage: cgImage)) {
+                    featurePrint = (id: assetId, print: fp)
+                }
+            } else {
+                image = nil
+            }
+        } else {
+            image = await photoService.loadImageWithTimeout(
+                for: asset, targetSize: CGSize(width: 512, height: 512)
+            )
+        }
+
+        guard let image else {
+            return AssetScanResult(issues: issues, featurePrint: featurePrint)
+        }
+
+        // Batched Vision analysis (single image decode for saliency + face + text + featurePrint)
+        if let batch = try? analysisService.batchedAnalysis(for: image) {
+            // Blur detection (skip Portrait mode)
+            let isPortrait = asset.mediaSubtypes.contains(.photoDepthEffect)
+            if !isPortrait && batch.blurScore < settings.blurThreshold {
+                issues.append(AssetScanResult.IssueData(
+                    assetId: assetId, category: .blurry,
+                    confidence: 1.0 - batch.blurScore, fileSize: fileSize,
+                    userDecision: .pending, groupId: nil,
+                    sceneTags: nil, aestheticsScore: nil, isVideo: isVideo
+                ))
+            }
+
+            // Screenshot detection (photos only)
+            if !isVideo {
+                let isScreenshot = asset.mediaSubtypes.contains(.photoScreenshot)
+                if isScreenshot || analysisService.isScreenshotByHeuristic(
+                    pixelWidth: asset.pixelWidth, pixelHeight: asset.pixelHeight,
+                    hasCameraMetadata: false
+                ) {
+                    issues.append(AssetScanResult.IssueData(
+                        assetId: assetId, category: .screenshot,
+                        confidence: isScreenshot ? 1.0 : 0.9, fileSize: fileSize,
+                        userDecision: .pending, groupId: nil,
+                        sceneTags: nil, aestheticsScore: nil, isVideo: false
+                    ))
+                }
+            }
+
+            // Text coverage (skip if significant face area)
+            if batch.faceArea <= 0.10 && batch.textCoverage >= settings.textCoverageThreshold {
+                issues.append(AssetScanResult.IssueData(
+                    assetId: assetId, category: .textHeavy,
+                    confidence: min(batch.textCoverage * 2, 1.0), fileSize: fileSize,
+                    userDecision: .pending, groupId: nil,
+                    sceneTags: nil, aestheticsScore: nil, isVideo: isVideo
+                ))
+            }
+
+            // Feature print for photos (videos handled above)
+            if !isVideo, let fp = batch.featurePrint {
+                featurePrint = (id: assetId, print: fp)
+            }
+
+            // Aesthetics + lens smudge (async, run concurrently)
+            async let aestheticsResult = analysisService.aestheticsScore(for: image)
+            async let smudgeResult = analysisService.lensSmudgeConfidence(for: image)
+            let aesthetics = await aestheticsResult
+            let smudge = await smudgeResult
+
+            // Lazy classifyScene — only if lowQuality or lensSmudge triggered
+            let needsSceneTags = (aesthetics != nil && aesthetics!.score < settings.lowQualityThreshold)
+                || (smudge != nil && smudge! >= settings.lensSmudgeThreshold)
+            let sceneTags: [String]? = needsSceneTags
+                ? ((try? analysisService.classifyScene(for: image, topK: 3))?.map { $0.label } ?? [])
+                : nil
+
+            if let aesthetics, aesthetics.score < settings.lowQualityThreshold {
+                issues.append(AssetScanResult.IssueData(
+                    assetId: assetId, category: .lowQuality,
+                    confidence: Double(1.0 - (aesthetics.score + 1.0) / 2.0),
+                    fileSize: fileSize,
+                    userDecision: .pending, groupId: nil,
+                    sceneTags: sceneTags, aestheticsScore: aesthetics.score, isVideo: isVideo
+                ))
+            }
+
+            if let smudge, smudge >= settings.lensSmudgeThreshold {
+                issues.append(AssetScanResult.IssueData(
+                    assetId: assetId, category: .lensSmudge,
+                    confidence: Double(smudge), fileSize: fileSize,
+                    userDecision: .pending, groupId: nil,
+                    sceneTags: sceneTags, aestheticsScore: nil, isVideo: isVideo
+                ))
+            }
+        }
+
+        return AssetScanResult(issues: issues, featurePrint: featurePrint)
     }
 
     func deleteMarkedPhotos() async throws -> Int64 {
