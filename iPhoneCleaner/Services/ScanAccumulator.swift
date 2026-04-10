@@ -15,14 +15,14 @@ struct AssetScanResult: Sendable {
     }
 
     let issues: [IssueData]
-    let featurePrint: (id: String, print: VNFeaturePrintObservation)?
+    let featurePrint: (id: String, print: VNFeaturePrintObservation, fileSize: Int64)?
 }
 
 actor ScanAccumulator {
     private var processed = 0
     private var categoryCounts: [IssueCategory: Int] = [:]
     private var issues: [AssetScanResult.IssueData] = []
-    private var featurePrints: [(id: String, print: VNFeaturePrintObservation)] = []
+    private var featurePrints: [(id: String, print: VNFeaturePrintObservation, fileSize: Int64)] = []
 
     func addResult(_ result: AssetScanResult) {
         processed += 1
@@ -39,7 +39,7 @@ actor ScanAccumulator {
         (processed, categoryCounts)
     }
 
-    func finalize() -> ([AssetScanResult.IssueData], [(id: String, print: VNFeaturePrintObservation)]) {
+    func finalize() -> ([AssetScanResult.IssueData], [(id: String, print: VNFeaturePrintObservation, fileSize: Int64)]) {
         (issues, featurePrints)
     }
 }

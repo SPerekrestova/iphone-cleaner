@@ -107,36 +107,37 @@ final class PhotoScanEngine {
         let simMaxDist = Float((1.0 - Double(settings.similarThreshold)) * 50.0)
 
         let groupingService = ImageAnalysisService()
-        let allGroups = groupingService.groupByFeaturePrintBucketed(featurePrints, maxDistance: simMaxDist)
+        let mappedPrints = featurePrints.map { (id: $0.id, print: $0.print) }
+        let allGroups = groupingService.groupByFeaturePrintBucketed(mappedPrints, maxDistance: simMaxDist)
 
         var categoryCounts = await accumulator.snapshot().1
         var duplicateAssetIds = Set<String>()
+        
+        let featurePrintMap = Dictionary(uniqueKeysWithValues: featurePrints.map { ($0.id, (print: $0.print, fileSize: $0.fileSize)) })
 
         // First pass: extract duplicates (tight distance)
         for group in allGroups {
-            var dupGroup: [String] = []
-            let anchor = featurePrints.first { $0.id == group[0] }
-            for memberId in group {
-                if memberId == group[0] { dupGroup.append(memberId); continue }
-                guard let memberFP = featurePrints.first(where: { $0.id == memberId }),
-                      let anchorFP = anchor else { continue }
-                let dist = (try? groupingService.featurePrintDistance(anchorFP.print, memberFP.print)) ?? Float.infinity
-                if dist <= dupMaxDist {
-                    dupGroup.append(memberId)
-                }
+            // Re-cluster within the similar group using dupMaxDist to find all exact duplicates
+            let groupPrints = group.compactMap { id -> (id: String, print: VNFeaturePrintObservation)? in
+                guard let data = featurePrintMap[id] else { return nil }
+                return (id: id, print: data.print)
             }
+            let dupGroups = groupingService.groupByFeaturePrint(groupPrints, maxDistance: dupMaxDist)
 
-            if dupGroup.count > 1 {
-                let groupId = UUID().uuidString
-                for assetId in dupGroup.dropFirst() {
-                    allIssues.append(PhotoIssue(
-                        assetId: assetId, category: .duplicate,
-                        confidence: 0.95, fileSize: 0, groupId: groupId
-                    ))
-                    categoryCounts[.duplicate, default: 0] += 1
-                    duplicateAssetIds.insert(assetId)
+            for dupGroup in dupGroups {
+                if dupGroup.count > 1 {
+                    let groupId = UUID().uuidString
+                    for assetId in dupGroup.dropFirst() {
+                        let fileSize = featurePrintMap[assetId]?.fileSize ?? 0
+                        allIssues.append(PhotoIssue(
+                            assetId: assetId, category: .duplicate,
+                            confidence: 0.95, fileSize: fileSize, groupId: groupId
+                        ))
+                        categoryCounts[.duplicate, default: 0] += 1
+                        duplicateAssetIds.insert(assetId)
+                    }
+                    duplicateAssetIds.insert(dupGroup[0])
                 }
-                duplicateAssetIds.insert(dupGroup[0])
             }
         }
 
@@ -146,9 +147,10 @@ final class PhotoScanEngine {
             if nonDupMembers.count < 2 { continue }
             let groupId = UUID().uuidString
             for assetId in nonDupMembers.dropFirst() {
+                let fileSize = featurePrintMap[assetId]?.fileSize ?? 0
                 allIssues.append(PhotoIssue(
                     assetId: assetId, category: .similar,
-                    confidence: 0.85, fileSize: 0, groupId: groupId
+                    confidence: 0.85, fileSize: fileSize, groupId: groupId
                 ))
                 categoryCounts[.similar, default: 0] += 1
             }
@@ -195,7 +197,7 @@ final class PhotoScanEngine {
                 image = UIImage(cgImage: cgImage)
                 // Feature print from keyframe
                 if let fp = try? analysisService.generateFeaturePrint(for: UIImage(cgImage: cgImage)) {
-                    featurePrint = (id: assetId, print: fp)
+                    featurePrint = (id: assetId, print: fp, fileSize: fileSize)
                 }
             } else {
                 image = nil
@@ -251,7 +253,7 @@ final class PhotoScanEngine {
 
             // Feature print for photos (videos handled above)
             if !isVideo, let fp = batch.featurePrint {
-                featurePrint = (id: assetId, print: fp)
+                featurePrint = (id: assetId, print: fp, fileSize: fileSize)
             }
 
             // Aesthetics + lens smudge (async, run concurrently)
