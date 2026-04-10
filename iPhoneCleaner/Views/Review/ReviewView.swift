@@ -6,7 +6,6 @@ struct ReviewView: View {
     let photoService: PhotoLibraryService
 
     @State private var currentImage: UIImage?
-    @State private var imageCache: [String: UIImage] = [:]
     @State private var showDeleteConfirmation = false
     @State private var showDeletionError = false
     @State private var deletionInfo: DeletionInfo?
@@ -165,18 +164,19 @@ struct ReviewView: View {
         guard let issue = viewModel.currentIssue else { return }
 
         // Use cache if available
-        if let cached = imageCache[issue.assetId] {
+        if let cached = appState.imageCache.image(for: issue.assetId) {
             currentImage = cached
         } else {
             currentImage = nil
         }
 
         // Load current image if not cached
-        if imageCache[issue.assetId] == nil {
-            let image = await loadImage(for: issue.assetId)
-            imageCache[issue.assetId] = image
-            if viewModel.currentIssue?.assetId == issue.assetId {
-                currentImage = image
+        if appState.imageCache.image(for: issue.assetId) == nil {
+            if let image = await loadImage(for: issue.assetId) {
+                appState.imageCache.setImage(image, for: issue.assetId)
+                if viewModel.currentIssue?.assetId == issue.assetId {
+                    currentImage = image
+                }
             }
         }
 
@@ -186,22 +186,15 @@ struct ReviewView: View {
         if prefetchStart <= prefetchEnd {
             for i in prefetchStart...prefetchEnd {
                 let nextId = viewModel.issues[i].assetId
-                if imageCache[nextId] == nil {
-                    let image = await loadImage(for: nextId)
-                    imageCache[nextId] = image
+                if appState.imageCache.image(for: nextId) == nil {
+                    if let image = await loadImage(for: nextId) {
+                        appState.imageCache.setImage(image, for: nextId)
+                    }
                 }
             }
         }
-
-        // Evict old entries (keep only current ± 2)
-        let lo = max(viewModel.currentIndex - 2, 0)
-        let hi = min(viewModel.currentIndex + 2, viewModel.issues.count - 1)
-        if lo <= hi {
-            let keepIds = Set((lo...hi).compactMap { i in
-                i < viewModel.issues.count ? viewModel.issues[i].assetId : nil
-            })
-            imageCache = imageCache.filter { keepIds.contains($0.key) }
-        }
+        
+        // Evictions are handled by NSCache internally, so we don't need manual eviction logic here!
     }
 
     private func loadImage(for assetId: String) async -> UIImage? {
