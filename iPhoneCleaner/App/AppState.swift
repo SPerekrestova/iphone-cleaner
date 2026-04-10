@@ -6,6 +6,7 @@ import SwiftUI
 final class AppState {
     let scanEngine = PhotoScanEngine()
     let photoService = PhotoLibraryService()
+    let imageCache = ImageCacheService.shared
 
 
     var scanSettings = ScanSettings()
