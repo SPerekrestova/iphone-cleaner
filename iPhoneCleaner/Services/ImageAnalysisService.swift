@@ -23,56 +23,40 @@ final class ImageAnalysisService {
             kCIInputSaturationKey: 0.0
         ])
 
-        // Use Laplacian variance as blur metric
-        let laplacianKernel: [Float] = [
+        // 3x3 Laplacian Kernel for Edge Detection
+        let kernelWeights: [CGFloat] = [
             0,  1, 0,
             1, -4, 1,
             0,  1, 0
         ]
+        
+        guard let laplacianFilter = CIFilter(name: "CIConvolution3X3") else { return 0.0 }
+        laplacianFilter.setValue(grayscale, forKey: kCIInputImageKey)
+        laplacianFilter.setValue(CIVector(values: kernelWeights, count: 9), forKey: "inputWeights")
+        
+        guard let laplacianImage = laplacianFilter.outputImage?.cropped(to: grayscale.extent) else { return 0.0 }
 
-        guard let outputCGImage = ciContext.createCGImage(grayscale, from: grayscale.extent) else {
-            return 0.0
-        }
+        let width = Int(laplacianImage.extent.width)
+        let height = Int(laplacianImage.extent.height)
+        
+        // Render 1-channel Float32 safely using generic RGBAf buffer
+        var pixels = [Float](repeating: 0, count: width * height * 4)
+        
+        ciContext.render(
+            laplacianImage,
+            toBitmap: &pixels,
+            rowBytes: width * 4 * MemoryLayout<Float>.stride,
+            bounds: laplacianImage.extent,
+            format: .RGBAf,
+            colorSpace: nil
+        )
 
-        guard let pixelData = outputCGImage.dataProvider?.data,
-              let data = CFDataGetBytePtr(pixelData) else {
-            return 0.0
-        }
+        // Compute Mean Square (Variance) using vDSP via stride 4 (Red channel)
+        var meanSquare: Float = 0
+        vDSP_measqv(pixels, 4, &meanSquare, vDSP_Length(width * height))
 
-        let width = outputCGImage.width
-        let height = outputCGImage.height
-        let bytesPerPixel = outputCGImage.bitsPerPixel / 8
-
-        var pixels = [Float](repeating: 0, count: width * height)
-        for y in 0..<height {
-            for x in 0..<width {
-                let offset = (y * outputCGImage.bytesPerRow) + (x * bytesPerPixel)
-                pixels[y * width + x] = Float(data[offset])
-            }
-        }
-
-        // Apply Laplacian convolution
-        var variance: Float = 0
-        var count = 0
-        for y in 1..<(height - 1) {
-            for x in 1..<(width - 1) {
-                var laplacian: Float = 0
-                for ky in -1...1 {
-                    for kx in -1...1 {
-                        let px = pixels[(y + ky) * width + (x + kx)]
-                        let k = laplacianKernel[(ky + 1) * 3 + (kx + 1)]
-                        laplacian += px * k
-                    }
-                }
-                variance += laplacian * laplacian
-                count += 1
-            }
-        }
-
-        let meanVariance = count > 0 ? Double(variance) / Double(count) : 0
-        // Normalize: high variance = sharp, low = blurry
-        // Typical range: 0-5000+. Map to 0-1 where 1 = perfectly sharp
-        let sharpnessScore = min(meanVariance / 2000.0, 1.0)
+        // Scale factor: aligns with the legacy CPU threshold logic where values mapped from 8-bit un-normalized bounds
+        let sharpnessScore = min(Double(meanSquare * 35.0), 1.0)
         return sharpnessScore
     }
 
@@ -166,8 +150,7 @@ final class ImageAnalysisService {
 
     func groupBySimilarityBucketed(
         _ items: [(id: String, embedding: [Float])],
-        threshold: Float,
-        numBuckets: Int = 32
+        threshold: Float
     ) -> [[String]] {
         guard items.count > 1, let dim = items.first?.embedding.count, dim > 0 else { return [] }
 
@@ -176,58 +159,67 @@ final class ImageAnalysisService {
             return groupBySimilarity(items, threshold: threshold)
         }
 
-        // Generate random projection vectors for bucketing
+        // Generate multiple hash tables to increase LSH recall
+        let numTables = 3
         let numProjections = min(8, dim)
-        var projections: [[Float]] = []
-        for _ in 0..<numProjections {
-            let proj = (0..<dim).map { _ in Float.random(in: -1...1) }
-            let norm = sqrt(proj.reduce(0) { $0 + $1 * $1 })
-            projections.append(proj.map { $0 / norm })
-        }
-
-        // Assign each item a hash based on sign of dot products with projections
-        func hashKey(_ embedding: [Float]) -> Int {
-            var key = 0
-            for (i, proj) in projections.enumerated() {
-                var dot: Float = 0
-                for j in 0..<dim {
-                    dot += embedding[j] * proj[j]
-                }
-                if dot >= 0 { key |= (1 << i) }
+        
+        var tables: [[[Float]]] = []
+        for _ in 0..<numTables {
+            var projections: [[Float]] = []
+            for _ in 0..<numProjections {
+                let proj = (0..<dim).map { _ in Float.random(in: -1...1) }
+                let norm = sqrt(proj.reduce(0) { $0 + $1 * $1 })
+                projections.append(norm > 0 ? proj.map { $0 / norm } : proj)
             }
-            return key
+            tables.append(projections)
         }
 
-        // Build buckets
-        var buckets: [Int: [Int]] = [:]
-        for (i, item) in items.enumerated() {
-            let key = hashKey(item.embedding)
-            buckets[key, default: []].append(i)
+        // Hash each item to build candidate edges
+        var adjacencyList: [Int: Set<Int>] = [:]
+        
+        for tableIdx in 0..<numTables {
+            var buckets: [Int: [Int]] = [:]
+            for (i, item) in items.enumerated() {
+                var key = 0
+                for (pIdx, proj) in tables[tableIdx].enumerated() {
+                    var dot: Float = 0
+                    vDSP_dotpr(item.embedding, 1, proj, 1, &dot, vDSP_Length(dim))
+                    if dot >= 0 { key |= (1 << pIdx) }
+                }
+                buckets[key, default: []].append(i)
+            }
+            
+            for (_, indices) in buckets {
+                for i in indices {
+                    var set = adjacencyList[i, default: Set<Int>()]
+                    for j in indices where j != i {
+                        set.insert(j)
+                    }
+                    adjacencyList[i] = set
+                }
+            }
         }
 
-        // Compare within each bucket
+        // Group across candidate matches
         var visited = Set<Int>()
         var groups: [[String]] = []
 
-        for (_, indices) in buckets {
-            for i in indices {
-                if visited.contains(i) { continue }
-                var group = [items[i].id]
-                visited.insert(i)
-
-                for j in indices {
-                    if visited.contains(j) || i == j { continue }
-                    let sim = Self.cosineSimilarity(items[i].embedding, items[j].embedding)
-                    if sim >= threshold {
-                        group.append(items[j].id)
-                        visited.insert(j)
-                    }
-                }
-
-                if group.count > 1 {
-                    groups.append(group)
+        for i in 0..<items.count {
+            if visited.contains(i) { continue }
+            var group = [items[i].id]
+            visited.insert(i)
+            
+            let candidates = adjacencyList[i] ?? []
+            for j in candidates {
+                if visited.contains(j) { continue }
+                let sim = Self.cosineSimilarity(items[i].embedding, items[j].embedding)
+                if sim >= threshold {
+                    group.append(items[j].id)
+                    visited.insert(j)
                 }
             }
+            
+            if group.count > 1 { groups.append(group) }
         }
 
         return groups
@@ -293,56 +285,69 @@ final class ImageAnalysisService {
             return groupByFeaturePrint(prints, maxDistance: maxDistance)
         }
 
-        // Generate random projection vectors
+        // We will use 3 tables with 8 projections each
+        let numTables = 3
         let numProjections = min(8, dim)
-        var projections: [[Float]] = []
-        for _ in 0..<numProjections {
-            let proj = (0..<dim).map { _ in Float.random(in: -1...1) }
-            let norm = sqrt(proj.reduce(0) { $0 + $1 * $1 })
-            projections.append(norm > 0 ? proj.map { $0 / norm } : proj)
-        }
-
-        // Hash each item
-        func hashKey(_ embedding: [Float]) -> Int {
-            var key = 0
-            for (i, proj) in projections.enumerated() {
-                var dot: Float = 0
-                vDSP_dotpr(embedding, 1, proj, 1, &dot, vDSP_Length(min(embedding.count, proj.count)))
-                if dot >= 0 { key |= (1 << i) }
+        
+        var tables: [[[Float]]] = []
+        for _ in 0..<numTables {
+            var projections: [[Float]] = []
+            for _ in 0..<numProjections {
+                let proj = (0..<dim).map { _ in Float.random(in: -1...1) }
+                let norm = sqrt(proj.reduce(0) { $0 + $1 * $1 })
+                projections.append(norm > 0 ? proj.map { $0 / norm } : proj)
             }
-            return key
+            tables.append(projections)
         }
 
-        // Build buckets
-        var buckets: [Int: [Int]] = [:]
-        for (i, vec) in floatVectors.enumerated() {
-            let key = hashKey(vec)
-            buckets[key, default: []].append(i)
+        // Hash each item for each table to find potential candidate pairs
+        var adjacencyList: [Int: Set<Int>] = [:]
+        
+        for tableIdx in 0..<numTables {
+            var buckets: [Int: [Int]] = [:]
+            for (i, vec) in floatVectors.enumerated() {
+                var key = 0
+                for (pIdx, proj) in tables[tableIdx].enumerated() {
+                    var dot: Float = 0
+                    vDSP_dotpr(vec, 1, proj, 1, &dot, vDSP_Length(dim))
+                    if dot >= 0 { key |= (1 << pIdx) }
+                }
+                buckets[key, default: []].append(i)
+            }
+            
+            for (_, indices) in buckets {
+                for i in indices {
+                    var set = adjacencyList[i, default: Set<Int>()]
+                    for j in indices where j != i {
+                        set.insert(j)
+                    }
+                    adjacencyList[i] = set
+                }
+            }
         }
 
-        // Compare within each bucket using exact computeDistance
+        // Find connected components greedy based on exact computeDistance
         var visited = Set<Int>()
         var groups: [[String]] = []
 
-        for (_, indices) in buckets {
-            for i in indices {
-                if visited.contains(i) { continue }
-                var group = [prints[i].id]
-                visited.insert(i)
-
-                for j in indices {
-                    if visited.contains(j) || i == j { continue }
-                    do {
-                        let dist = try featurePrintDistance(prints[i].print, prints[j].print)
-                        if dist <= maxDistance {
-                            group.append(prints[j].id)
-                            visited.insert(j)
-                        }
-                    } catch { continue }
-                }
-
-                if group.count > 1 { groups.append(group) }
+        for i in 0..<prints.count {
+            if visited.contains(i) { continue }
+            var group = [prints[i].id]
+            visited.insert(i)
+            
+            let candidates = adjacencyList[i] ?? []
+            for j in candidates {
+                if visited.contains(j) { continue }
+                do {
+                    let dist = try featurePrintDistance(prints[i].print, prints[j].print)
+                    if dist <= maxDistance {
+                        group.append(prints[j].id)
+                        visited.insert(j)
+                    }
+                } catch { continue }
             }
+            
+            if group.count > 1 { groups.append(group) }
         }
 
         return groups

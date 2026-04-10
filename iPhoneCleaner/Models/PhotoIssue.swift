@@ -48,7 +48,8 @@ enum UserDecision: String, Codable {
 
 @Model
 final class PhotoIssue {
-    @Attribute(.unique) var assetId: String
+    var id = UUID().uuidString
+    var assetId: String
     var category: IssueCategory
     var confidence: Double
     var fileSize: Int64
